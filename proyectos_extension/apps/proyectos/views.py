@@ -1,3 +1,80 @@
 from django.shortcuts import render
+from django.http import Http404
 
-# Create your views here.
+
+# 🟢 DASHBOARD
+def inicio(request):
+    return render(request, 'inicio.html')
+
+
+# 🟢 PROYECTOS APROBADOS
+def proyectos_aprobados(request):
+    proyectos = [
+        {
+            "id": 1,
+            "titulo": "Sistema de Gestión Educativa",
+            "fecha": "15/03/2026",
+            "resumen": "Plataforma para administrar cursos y estudiantes."
+        },
+        {
+            "id": 2,
+            "titulo": "App de Salud Comunitaria",
+            "fecha": "02/04/2026",
+            "resumen": "Aplicación para monitoreo de pacientes rurales."
+        },
+        {
+            "id": 3,
+            "titulo": "Portal de Extensión Universitaria",
+            "fecha": "10/04/2026",
+            "resumen": "Sistema web para gestión de proyectos."
+        }
+    ]
+
+    return render(request, 'proyectos_aprobados.html', {
+        'proyectos': proyectos
+    })
+
+
+# 🟢 DETALLE DE PROYECTO
+def detalle_proyecto(request, id):
+    proyectos = [
+        {
+            "id": 1,
+            "titulo": "Sistema de Gestión Educativa",
+            "fecha": "15/03/2026",
+            "descripcion": "Sistema completo para gestionar alumnos, docentes y cursos."
+        },
+        {
+            "id": 2,
+            "titulo": "App de Salud Comunitaria",
+            "fecha": "02/04/2026",
+            "descripcion": "Aplicación para seguimiento de pacientes en zonas rurales."
+        },
+        {
+            "id": 3,
+            "titulo": "Portal de Extensión Universitaria",
+            "fecha": "10/04/2026",
+            "descripcion": "Plataforma institucional para gestión de proyectos."
+        }
+    ]
+
+    proyecto = next((p for p in proyectos if p["id"] == id), None)
+
+    if not proyecto:
+        raise Http404("Proyecto no encontrado")
+
+    return render(request, 'detalle_proyecto.html', {
+        'proyecto': proyecto
+    })
+
+
+# 🟢 SOPORTE
+def soporte(request):
+    enviado = False
+
+    if request.method == 'POST':
+        enviado = True
+
+    return render(request, 'soporte.html', {
+        'enviado': enviado
+    })

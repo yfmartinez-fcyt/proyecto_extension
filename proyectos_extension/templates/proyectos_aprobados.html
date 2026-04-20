@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Proyectos Aprobados</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<!-- HEADER -->
+<div class="bg-white shadow p-6">
+    <h1 class="text-3xl font-bold text-gray-800">
+        PROYECTOS APROBADOS
+    </h1>
+    <p class="text-gray-500 mt-2">
+        Lista de proyectos aprobados por la institución
+    </p>
+</div>
+
+<!-- CONTENIDO -->
+<div class="max-w-5xl mx-auto mt-6 space-y-6">
+
+    {% for p in proyectos %}
+    
+    <!-- 🔗 TODA LA TARJETA ES CLICKEABLE -->
+    <a href="/proyecto/{{ p.id }}/" class="block">
+        <div class="bg-white p-6 rounded shadow hover:shadow-xl hover:scale-[1.01] transition duration-200">
+
+            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                Proyecto
+            </span>
+
+            <h2 class="text-xl font-semibold mt-2 text-blue-800">
+                {{ p.titulo }}
+            </h2>
+
+            <p class="text-gray-500 text-sm mt-1">
+                {{ p.fecha }}
+            </p>
+
+            <p class="text-gray-700 mt-2">
+                {{ p.resumen }}
+            </p>
+
+            <span class="text-blue-600 text-sm mt-3 inline-block font-medium">
+                Ver más →
+            </span>
+
+        </div>
+    </a>
+
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
