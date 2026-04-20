@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'apps.core.apps.CoreConfig',
+    'apps.usuarios.apps.UsuariosConfig',  
+    'apps.proyectos.apps.ProyectosConfig',
+    # Agregamos las apps de nuestro proyecto, debido a nuestra estruruta debemos poner apps.nombre_de_la_app /Yani
 ]
 
 MIDDLEWARE = [
@@ -54,8 +59,15 @@ ROOT_URLCONF = 'proyectos_extension.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        
+         
+        #le dice a Django que busque templates también en esta carpeta global”
+        #sino solo buscaría templates dentro de las apps    /Yani
+        'DIRS': [BASE_DIR / 'templates'], 
+        
+        # Le dice a Django: “Busca templates automáticamente dentro de cada app”
+        # Debe estar en TRUE para usar TEMPLATES    /Yani
+        'APP_DIRS': True, 
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -73,11 +85,24 @@ WSGI_APPLICATION = 'proyectos_extension.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
+    #Conectamos con postgres
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'extension_db',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
+    
+#Agregamos     
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
+AUTHENTICATION_BACKENDS = [
+    'apps.usuarios.backends.EmailOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 # Password validation
@@ -114,4 +139,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
+#Define la URL base para archivos estáticos.
 STATIC_URL = 'static/'
+
+# Le dice a Django: “Aquí están tus archivos estáticos personalizados”
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'inicio'
+LOGOUT_REDIRECT_URL = 'inicio'
