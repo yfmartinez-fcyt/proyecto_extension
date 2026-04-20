@@ -7,8 +7,10 @@ def inicio(request):
     return render(request, 'inicio.html')
 
 
-# 🟢 PROYECTOS APROBADOS
+# 🟢 PROYECTOS APROBADOS (CON BUSCADOR)
 def proyectos_aprobados(request):
+    query = request.GET.get('q', '')
+
     proyectos = [
         {
             "id": 1,
@@ -30,8 +32,17 @@ def proyectos_aprobados(request):
         }
     ]
 
+    # 🔎 FILTRO POR NOMBRE O FECHA
+    if query:
+        query_lower = query.lower()
+        proyectos = [
+            p for p in proyectos
+            if query_lower in p["titulo"].lower() or query in p["fecha"]
+        ]
+
     return render(request, 'proyectos_aprobados.html', {
-        'proyectos': proyectos
+        'proyectos': proyectos,
+        'query': query
     })
 
 
