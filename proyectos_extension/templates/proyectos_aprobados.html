@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Proyectos Aprobados</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -19,39 +18,86 @@
     </p>
 </div>
 
+<!-- 🔎 BUSCADOR -->
+<div class="max-w-5xl mx-auto mt-6">
+    <form method="GET" class="flex gap-2">
+
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Buscar por nombre o fecha (ej: Sistema o 2024)..."
+            value="{{ query|default:'' }}"
+            class="w-full p-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+
+        <button class="bg-blue-600 text-white px-6 rounded hover:bg-blue-700 transition">
+            Buscar
+        </button>
+
+        <!-- Botón limpiar -->
+        <a href="/aprobados/" class="bg-gray-300 px-4 flex items-center rounded hover:bg-gray-400">
+            Limpiar
+        </a>
+
+    </form>
+</div>
+
 <!-- CONTENIDO -->
 <div class="max-w-5xl mx-auto mt-6 space-y-6">
 
-    {% for p in proyectos %}
-    
-    <!-- 🔗 TODA LA TARJETA ES CLICKEABLE -->
-    <a href="/proyecto/{{ p.id }}/" class="block">
-        <div class="bg-white p-6 rounded shadow hover:shadow-xl hover:scale-[1.01] transition duration-200">
+    {% if proyectos %}
 
-            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                Proyecto
-            </span>
+        <p class="text-sm text-gray-500">
+            {% if query %}
+                Resultados para: <strong>"{{ query }}"</strong>
+            {% endif %}
+        </p>
 
-            <h2 class="text-xl font-semibold mt-2 text-blue-800">
-                {{ p.titulo }}
-            </h2>
+        {% for p in proyectos %}
+        
+        <a href="/proyecto/{{ p.id }}/" class="block">
+            <div class="bg-white p-6 rounded shadow hover:shadow-xl hover:scale-[1.01] transition duration-200">
 
-            <p class="text-gray-500 text-sm mt-1">
-                {{ p.fecha }}
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    Proyecto aprobado
+                </span>
+
+                <h2 class="text-xl font-semibold mt-2 text-blue-800">
+                    {{ p.titulo }}
+                </h2>
+
+                <p class="text-gray-500 text-sm mt-1">
+                    📅 {{ p.fecha }}
+                </p>
+
+                <p class="text-gray-700 mt-2">
+                    {{ p.resumen }}
+                </p>
+
+                <span class="text-blue-600 text-sm mt-3 inline-block font-medium">
+                    Ver más →
+                </span>
+
+            </div>
+        </a>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="text-center bg-white p-10 rounded shadow">
+            <p class="text-gray-500 text-lg">
+                ❌ No se encontraron proyectos
             </p>
 
-            <p class="text-gray-700 mt-2">
-                {{ p.resumen }}
+            {% if query %}
+            <p class="text-sm text-gray-400 mt-2">
+                Intenta con otro nombre o fecha
             </p>
-
-            <span class="text-blue-600 text-sm mt-3 inline-block font-medium">
-                Ver más →
-            </span>
-
+            {% endif %}
         </div>
-    </a>
 
-    {% endfor %}
+    {% endif %}
 
 </div>
 
