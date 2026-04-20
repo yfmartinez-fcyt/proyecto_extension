@@ -1,18 +1,358 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Formulario de Nuevo Proyecto{% endblock %}
+{% block title %}Formulario de Proyecto{% endblock %}
+{% block body_class %}body-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/nuevo_proyecto.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <h1 class="mb-3">Formulario de Nuevo Proyecto</h1>
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <img src="{% static 'assets/logo.fctunca.blanco.small.png' %}" alt="Logo FCyT" class="logo" />
+      <h1 class="header-title">PORTAL FCyT</h1>
+    </div>
+    <a href="mailto:soporte@fctunca.edu.py" class="soporte-link">Soporte técnico</a>
+  </div>
+</header>
 
-    <p>Estás en la página de Formulario de Nuevo Proyecto</p>
+<section class="hero-section">
+  <h2 class="hero-title">Formulario de Programa, Proyecto o Actividad</h2>
+  <p class="hero-description">
+    Complete el siguiente formulario con la información detallada de su propuesta académica.
+    <br />
+    Asegúrese de adjuntar todos los indicadores necesarios para la evaluación.
+  </p>
+</section>
 
-    {% if user.is_authenticated %}
-        <p>Estás logueado como: <strong>{{ user.first_name }}</strong></p>
-        <p>Rol: {{ user.rol }}</p>
-    {% else %}
-        <p>No has iniciado sesión.</p>
-    {% endif %}
-</div>
+<form class="form-wrapper" id="form-proponente" method="post" novalidate>
+  {% csrf_token %}
+
+  <main class="main-proponente">
+    <h2 class="section-heading">Datos del Proponente</h2>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label" for="nombre_proponente">Nombre:</label>
+        <input type="text" class="form-input" id="nombre_proponente" name="nombre_proponente" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="apellido_proponente">Apellido:</label>
+        <input type="text" class="form-input" id="apellido_proponente" name="apellido_proponente" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="correo_proponente">Correo electrónico:</label>
+        <input type="text" class="form-input" id="correo_proponente" name="correo_proponente" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="telefono_proponente">Teléfono:</label>
+        <input type="text" class="form-input" id="telefono_proponente" name="telefono_proponente" />
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label">¿Es estudiante?</label>
+
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" id="estudiante_si" name="estudiante_proponente" value="Sí" />
+            <span>Sí</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" id="estudiante_no" name="estudiante_proponente" value="No" />
+            <span>No</span>
+          </label>
+        </div>
+
+        <small class="error-message" id="error-estudiante"></small>
+      </div>
+
+      <div id="docente-responsable-campo" class="full-width" style="display: none;">
+        <label class="form-label" for="docente_responsable">Nombre del Docente Responsable:</label>
+        <input type="text" class="form-input" id="docente_responsable" name="docente_responsable" />
+        <small class="error-message"></small>
+      </div>
+    </div>
+  </main>
+
+  <main class="main-proyecto">
+    <h2 class="section-heading">Formulario de Programa, Proyecto o Actividad</h2>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label" for="denominacion-select">Denominación/Línea de acción:</label>
+        <select class="form-input" name="denominacion" id="denominacion-select">
+          <option value="">Seleccione una línea de acción</option>
+          <option value="ambiente">Ambiente</option>
+          <option value="comunidad">Comunidad</option>
+          <option value="desarrollo">Desarrollo Tecnológico</option>
+        </select>
+        <small class="error-message" id="error-denominacion"></small>
+
+        <div id="sublineas-ambiente" style="display:none; margin-top:10px;">
+          <label class="form-label" for="sublinea_ambiente">Seleccione una sublínea:</label>
+          <select class="form-input" name="sublinea_ambiente" id="sublinea_ambiente">
+            <option value="">Seleccione una sublínea</option>
+            <option value="educacion">Educación ambiental, producción de servicios sustentables, sostenidos y sostenibles</option>
+            <option value="preservacion">Preservación de recursos naturales</option>
+          </select>
+          <small class="error-message" id="error-sublinea-ambiente"></small>
+        </div>
+
+        <div id="sublineas-comunidad" style="display:none; margin-top:10px;">
+          <label class="form-label" for="sublinea_comunidad">Seleccione una sublínea:</label>
+          <select class="form-input" name="sublinea_comunidad" id="sublinea_comunidad">
+            <option value="">Seleccione una sublínea</option>
+            <option value="vinculacion">Vinculación de la extensión universitaria con la Academia, la investigación y el bienestar estudiantil</option>
+            <option value="practicas">Prácticas socioeducativas, aprendizaje servicios o proyectos sociales estudiantiles</option>
+          </select>
+          <small class="error-message" id="error-sublinea-comunidad"></small>
+        </div>
+
+        <div id="sublineas-desarrollo" style="display:none; margin-top:10px;">
+          <label class="form-label" for="sublinea_desarrollo">Seleccione una sublínea:</label>
+          <select class="form-input" name="sublinea_desarrollo" id="sublinea_desarrollo">
+            <option value="">Seleccione una sublínea</option>
+            <option value="innovacion">Proyectos de innovación</option>
+            <option value="investigacion">Investigación aplicada y resolución de problemas</option>
+          </select>
+          <small class="error-message" id="error-sublinea-desarrollo"></small>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label" for="fecha_inicio">Fecha de realización:</label>
+        <input type="date" class="form-input" id="fecha_inicio" name="fecha_inicio" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="fecha_fin">Fecha de finalización:</label>
+        <input type="date" class="form-input" id="fecha_fin" name="fecha_fin" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="hora">Hora:</label>
+        <input type="time" class="form-input" id="hora" name="hora" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="horas">Horas asignadas:</label>
+        <input type="number" class="form-input" id="horas" name="horas" placeholder="Horas a ser computadas en la planilla" />
+        <small class="error-message"></small>
+      </div>
+
+      <div id="unidades-academicas-container" class="full-width">
+        <div class="unidad-academica-group">
+          <label class="form-label" for="unidad_academica_1">Unidad Académica:</label>
+          <select class="form-input unidad-academica-select" id="unidad_academica_1" name="unidad_academica[]">
+            <option value="">Seleccione una unidad académica</option>
+            <option value="Facultad de Ciencias y Tecnologías">Facultad de Ciencias y Tecnologías</option>
+            <option value="Facultad Ciencias de la Producción">Facultad Ciencias de la Producción</option>
+            <option value="Facultad de Ciencias de la Salud">Facultad de Ciencias de la Salud</option>
+            <option value="Facultad de Ciencias Médicas">Facultad de Ciencias Médicas</option>
+            <option value="Facultad de Odontología">Facultad de Odontología</option>
+            <option value="Facultad de Ciencias Económicas">Facultad de Ciencias Económicas</option>
+            <option value="Facultad de Ciencias Sociales, Políticas y Humanidades">Facultad de Ciencias Sociales, Políticas y Humanidades</option>
+            <option value="Escuela Superior de Artes y Desarrollo de Talentos">Escuela Superior de Artes y Desarrollo de Talentos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="full-width">
+        <button type="button" id="agregar-unidad-btn">Agregar otra unidad académica</button>
+      </div>
+
+      <div>
+        <label class="form-label" for="carrera">Carrera:</label>
+        <input type="text" class="form-input" id="carrera" name="carrera" placeholder="Ingrese la carrera" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="curso">Curso:</label>
+        <input type="text" class="form-input" id="curso" name="curso" placeholder="Ingrese el curso" />
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label" for="organizaciones-textarea">Organizaciones Involucradas:</label>
+        <textarea class="form-textarea" name="organizaciones" id="organizaciones-textarea">- </textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label" for="fundamentacion">Fundamentación:</label>
+        <textarea class="form-textarea" id="fundamentacion" name="fundamentacion"></textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label" for="objetivos-textarea">Objetivos generales y específicos:</label>
+        <textarea class="form-textarea" name="objetivos" id="objetivos-textarea">- </textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label" for="metodologia">Metodología de Implementación:</label>
+        <textarea class="form-textarea" id="metodologia" name="metodologia"></textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="metas-textarea">Metas:</label>
+        <textarea class="form-textarea" name="metas" id="metas-textarea">- </textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="resultados">Resultados esperados:</label>
+        <textarea class="form-textarea" id="resultados" name="resultados"></textarea>
+        <small class="error-message"></small>
+      </div>
+    </div>
+  </main>
+
+  <main class="main-proyecto">
+    <h2 class="section-heading">Indicadores de evaluación</h2>
+
+    <div class="form-grid">
+      <div>
+        <label class="form-label" for="recursos_humanos">Recursos Humanos participantes:</label>
+        <textarea class="form-textarea" id="recursos_humanos" name="recursos_humanos"></textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="proponente">Proponente:</label>
+        <input type="text" class="form-input" id="proponente" name="proponente" />
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="beneficiarios">Identificación de Beneficiarios:</label>
+        <textarea class="form-textarea" id="beneficiarios" name="beneficiarios"></textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div>
+        <label class="form-label" for="localizacion">Localización:</label>
+        <select class="form-input" id="localizacion" name="localizacion">
+          <option value="">Seleccione una opción</option>
+          <option value="Departamento">Departamento</option>
+          <option value="Distrito">Distrito</option>
+          <option value="Ciudad-compañía-barrio">Ciudad-compañía-barrio</option>
+          <option value="Local">Local</option>
+        </select>
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label" for="presupuesto">Presupuesto:</label>
+        <textarea class="form-textarea" id="presupuesto" name="presupuesto"></textarea>
+        <small class="error-message"></small>
+      </div>
+
+      <div class="full-width">
+        <label class="form-label cronograma-label">Cronograma:</label>
+        <div class="cronograma-wrap">
+          <table class="form-table cronograma-table">
+            <thead>
+              <tr>
+                <th>Actividad / Tarea*</th>
+                <th>Fecha de Inicio</th>
+                <th>Días</th>
+                <th>Hora</th>
+                <th>Fecha de Finalización</th>
+                <th>Horas/Crédito</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input type="text" name="cronograma_actividad_1" value="Llenado de formulario" class="cronograma-input" />
+                  <input type="text" name="cronograma_actividad_2" value="Solicitar aprobación a Decanato" class="cronograma-input cronograma-input-stacked" />
+                </td>
+                <td><input type="date" name="cronograma_inicio_1" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_1" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_1" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_1" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_1" class="cronograma-input" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="cronograma_actividad_3" value="Elaboración del programa de actividad" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_inicio_3" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_3" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_3" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_3" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_3" class="cronograma-input" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="cronograma_actividad_4" value="Conformación del equipo de trabajo" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_inicio_4" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_4" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_4" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_4" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_4" class="cronograma-input" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="cronograma_actividad_5" value="Participación y cobertura en el día del evento" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_inicio_5" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_5" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_5" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_5" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_5" class="cronograma-input" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="cronograma_actividad_6" value="Acreditación de horas de extensión universitaria" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_inicio_6" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_6" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_6" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_6" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_6" class="cronograma-input" /></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="cronograma_actividad_7" value="Período de reclamo y/o ajustes en acreditación" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_inicio_7" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_dias_7" class="cronograma-input" /></td>
+                <td><input type="time" name="cronograma_hora_7" class="cronograma-input" /></td>
+                <td><input type="date" name="cronograma_fin_7" class="cronograma-input" /></td>
+                <td><input type="number" name="cronograma_credito_7" class="cronograma-input" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="full-width submit-panel">
+        <label class="declaration-box">
+          <input type="checkbox" id="declaracion_revision" name="declaracion_revision" />
+          <span class="declaration-text">
+            He revisado los datos y confirmo que son correctos según los requerimientos de la FCyT.
+          </span>
+        </label>
+
+        <div class="submit-actions">
+          <button type="submit" class="submit-button">Enviar proyecto</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/nuevo_proyecto.js' %}"></script>
 {% endblock %}
