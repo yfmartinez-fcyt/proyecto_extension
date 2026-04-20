@@ -11,3 +11,6 @@ def lineas_accion(request):
 
 def soporte_tecnico(request):
     return render(request, 'core/soporte_tecnico.html')
+
+def repositorio_proyectos(request):
+    return render(request, 'core/repositorio_proyectos.html')
