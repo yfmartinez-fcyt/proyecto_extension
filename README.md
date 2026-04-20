@@ -16,7 +16,7 @@
     ├── README.md              # Documentación del proyecto
     ├── requirements.txt       # Dependencias del proyecto
     │
-    ├── config/                # Configuración global del proyecto Django
+    ├── proyectos_extension/                # Configuración global del proyecto Django
     │   ├── __init__.py
     │   ├── settings.py        # Configuraciones (BD, apps, seguridad, etc.)
     │   ├── urls.py            # Rutas principales del sistema
@@ -25,20 +25,18 @@
     │
     ├── apps/
     │   ├── usuarios/
+    │   │   ├── migrations/
+    │   │   │   └──__init__.py
     │   │   ├── models.py
     │   │   ├── views.py
     │   │   ├── urls.py
+    │   │   ├── backends.py
     │   │   ├── forms.py
     │   │   └── admin.py
     │   │
-    │   ├── proyectos/
-    │   │   ├── models.py
-    │   │   ├── views.py
-    │   │   ├── urls.py
-    │   │   ├── forms.py
-    │   │   └── admin.py
-    │   │
-    │   └── informes/
+    │   └── proyectos/
+    │       ├── migrations/
+    │       │   └──__init__.py
     │       ├── models.py
     │       ├── views.py
     │       ├── urls.py
@@ -47,14 +45,33 @@
     │
     ├── templates/
     │   ├── base.html
+    │   ├── components/
+    │   │   ├── navbar.html
+    │   │   ├── sidebar.html
+    │   │   └── footer.html
+    │   │
+    │   ├── core/
+    │   │   ├── inicio.html
+    │   │   ├── lineas_accion.html
+    │   │   └── soporte_tecnico.html
+    │   │
     │   ├── usuarios/
-    │   ├── proyectos/
-    │   └── informes/
+    │   │   ├── login.html
+    │   │   └── perfil.html
+    │   │
+    │   └── proyectos/
+    │       ├── nuevo_proyecto.html
+    │       └── mis_proyectos.html
     │
     ├── static/
     │   ├── css/
+    │   │   └── layout.css
     │   ├── js/
-    │   └── img/
+    │   └── assets/
+    │       ├── img/
+    │       │   ├── logo-fcyt.png
+    │       │   └── default-avatar.png
+    │       └── icons/
     │
     ├── media/
     │

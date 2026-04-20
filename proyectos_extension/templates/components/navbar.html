@@ -1,32 +1,82 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-semibold" href="#">Proyecto Extension</a>
+{% load static %}
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTop">
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand d-flex align-items-center gap-3" href="{% url 'inicio' %}">
+            <img src="{% static 'assets/logofcytunca.png' %}" alt="Logo institucional" class="navbar-logo">
+            <div class="brand-text">
+                <span class="system-name d-block">Sistema de Gestión de Proyectos de Extensión</span>
+                <small class="system-subtitle d-none d-md-block">FCyT - UNCA</small>
+            </div>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarTop">
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Perfil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Proyectos Aprobados</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Institucional</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Soporte Técnico</a>
-                </li>
-                <li class="nav-item ms-lg-3">
-                    <a class="btn btn-outline-light btn-sm" href="#">Cerrar sesión</a>
-                </li>
-            </ul>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
+            <div class="d-flex align-items-center gap-2 gap-md-3 flex-wrap mt-3 mt-lg-0">
+
+                <a href="{% url 'soporte_tecnico' %}" class="btn btn-outline-secondary btn-support">
+                    <i class="bi bi-headset me-1"></i> Soporte Técnico
+                </a>
+
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn user-dropdown-btn dropdown-toggle d-flex align-items-center gap-2"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+
+                            {% if user.foto %}
+                                <img src="{{ user.foto.url }}" alt="Foto de perfil" class="profile-avatar">
+                            {% else %}
+                                <img src="{% static 'assets/default_avatar.png' %}" alt="Foto de perfil" class="profile-avatar">
+                            {% endif %}
+
+                            <div class="welcome-text text-start d-none d-md-block">
+                                <small class="text-muted d-block">Bienvenido/a</small>
+                                <span>{{ user.first_name|default:user.username }}</span>
+                            </div>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2">
+                            <li class="dropdown-header">
+                                <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
+                                <small class="text-muted">{{ user.email }}</small>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item rounded-3" href="{% url 'ver_perfil' %}">
+                                    <i class="bi bi-person-circle me-2"></i>Ver perfil
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item rounded-3" href="{% url 'mis_proyectos' %}">
+                                    <i class="bi bi-folder2-open me-2"></i>Mis proyectos
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <a class="dropdown-item rounded-3 text-danger" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-login">
+                        Iniciar sesión
+                    </a>
+                {% endif %}
+
+            </div>
         </div>
     </div>
 </nav>

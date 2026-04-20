@@ -1,33 +1,39 @@
 <aside class="sidebar bg-white border-end">
     <div class="sidebar-header p-3 border-bottom">
-        <h6 class="mb-0 fw-bold">Menú</h6>
+        <h6 class="mb-0 fw-bold">Menú principal</h6>
     </div>
 
-    <ul class="nav flex-column p-3 gap-1">
+    <ul class="nav flex-column p-3 gap-2">
+
         <li class="nav-item">
-            <a class="nav-link sidebar-link active" href="#">
-                Dashboard
+            {% if user.is_authenticated %}
+                <a class="nav-link sidebar-link" href="{% url 'nuevo_proyecto' %}">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Proyecto
+                </a>
+            {% else %}
+                <a class="nav-link sidebar-link" href="{% url 'login' %}?next={% url 'nuevo_proyecto' %}">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Proyecto
+                </a>
+            {% endif %}
+        </li>
+
+        <li class="nav-item">
+            {% if user.is_authenticated %}
+                <a class="nav-link sidebar-link" href="{% url 'mis_proyectos' %}">
+                    <i class="bi bi-folder2-open me-2"></i>Mis Proyectos
+                </a>
+            {% else %}
+                <a class="nav-link sidebar-link disabled" href="#">
+                    <i class="bi bi-folder2-open me-2"></i>Mis Proyectos
+                </a>
+            {% endif %}
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link sidebar-link" href="{% url 'lineas_accion' %}">
+                <i class="bi bi-diagram-3 me-2"></i>Líneas de acción
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link sidebar-link" href="#">
-                Proyectos
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link sidebar-link" href="#">
-                Usuarios
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link sidebar-link" href="#">
-                Reportes
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link sidebar-link" href="#">
-                Configuración
-            </a>
-        </li>
+
     </ul>
 </aside>

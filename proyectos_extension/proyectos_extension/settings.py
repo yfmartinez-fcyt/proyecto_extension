@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.usuarios',                     # Agregamos las apps de nuestro proyecto
-                                        # debido a nuestra estrucutar debemos poner apps.nombre_de_la_app
+    
+    'apps.core.apps.CoreConfig',
+    'apps.usuarios.apps.UsuariosConfig',  
+    'apps.proyectos.apps.ProyectosConfig',
+    # Agregamos las apps de nuestro proyecto, debido a nuestra estruruta debemos poner apps.nombre_de_la_app /Yani
 ]
 
 MIDDLEWARE = [
@@ -97,7 +100,8 @@ DATABASES = {
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
 AUTHENTICATION_BACKENDS = [
-    'usuarios.backends.EmailOrUsernameBackend',
+    'apps.usuarios.backends.EmailOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 
@@ -142,3 +146,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'inicio'
+LOGOUT_REDIRECT_URL = 'inicio'
