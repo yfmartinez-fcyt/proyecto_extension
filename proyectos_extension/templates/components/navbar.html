@@ -1,25 +1,45 @@
 {% load static %}
 
-<nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+<nav class="navbar custom-navbar sticky-top">
     <div class="container-fluid px-4">
 
+        <button class="btn btn-outline-primary me-3"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarCanvas">
+            <i class="bi bi-list"></i>
+        </button>
+
         <a class="navbar-brand d-flex align-items-center gap-3" href="{% url 'inicio' %}">
-            <img src="{% static 'assets/logofcytunca.png' %}" alt="Logo institucional" class="navbar-logo">
-            <div class="brand-text">
-                <span class="system-name d-block">Sistema de Gestión de Proyectos de Extensión</span>
-                <small class="system-subtitle d-none d-md-block">FCyT - UNCA</small>
+            <!-- LOGO (solo escritorio) -->
+            <img src="{% static 'assets/logofcytunca.png' %}" 
+                alt="Logo institucional" 
+                class="navbar-logo d-none d-md-block">
+
+            <!-- TEXTO (solo móvil) -->
+            <span class="mobile-title d-md-none">
+                Sistema de Proyectos
+            </span>
+
+            <!-- TEXTO completo (desktop) -->
+            <div class="brand-text d-none d-md-block">
+                <span class="system-name d-block">
+                    Sistema de Gestión de Proyectos de Extensión
+                </span>
+                <small class="system-subtitle">FCyT - UNCA</small>
             </div>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
             <div class="d-flex align-items-center gap-2 gap-md-3 flex-wrap mt-3 mt-lg-0">
 
-                <a href="{% url 'soporte_tecnico' %}" class="btn btn-outline-secondary btn-support">
+                <a href="{% url 'soporte_tecnico' %}" class="btn btn-outline-secondary btn-support d-none d-lg-inline-flex">
                     <i class="bi bi-headset me-1"></i> Soporte Técnico
+                </a>
+
+                <a href="{% url 'soporte_tecnico' %}" 
+                    class="btn btn-outline-secondary d-lg-none">
+                    <i class="bi bi-headset"></i>
                 </a>
 
                 {% if user.is_authenticated %}
@@ -77,6 +97,5 @@
                 {% endif %}
 
             </div>
-        </div>
     </div>
 </nav>

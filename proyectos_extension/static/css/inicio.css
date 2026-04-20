@@ -155,24 +155,6 @@
     line-height: 1.6;
 }
 
-.form-box {
-    background: #f7f9fc;
-    border: 1px solid #e6ebf2;
-    border-radius: 20px;
-    padding: 1.5rem;
-    height: 100%;
-}
-
-.form-control {
-    border-radius: 12px;
-    border-color: #dbe2ea;
-}
-
-.form-control:focus {
-    border-color: #b8c7e6;
-    box-shadow: 0 0 0 0.1rem rgba(22, 58, 138, 0.1);
-}
-
 .section-header .section-title {
     font-size: 1.6rem;
     font-weight: 700;
