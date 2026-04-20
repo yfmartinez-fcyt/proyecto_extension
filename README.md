@@ -24,6 +24,15 @@
     │   └── wsgi.py            # Configuración para servidores web
     │
     ├── apps/
+    │   ├── core/
+    │   │   ├── migrations/
+    │   │   │   └──__init__.py
+    │   │   ├── models.py
+    │   │   ├── views.py
+    │   │   ├── urls.py
+    │   │   ├── backends.py
+    │   │   └── forms.py
+    │   │ 
     │   ├── usuarios/
     │   │   ├── migrations/
     │   │   │   └──__init__.py
