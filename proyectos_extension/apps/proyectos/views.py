@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.http import Http404
 
 
 @login_required
@@ -10,3 +11,74 @@ def nuevo_proyecto(request):
 @login_required
 def mis_proyectos(request):
     return render(request, 'proyectos/mis_proyectos.html')
+
+# 🟢 PROYECTOS APROBADOS (CON BUSCADOR)
+def proyectos_aprobados(request):
+    query = request.GET.get('q', '')
+
+    proyectos = [
+        {
+            "id": 1,
+            "titulo": "Sistema de Gestión Educativa",
+            "fecha": "15/03/2026",
+            "resumen": "Plataforma para administrar cursos y estudiantes."
+        },
+        {
+            "id": 2,
+            "titulo": "App de Salud Comunitaria",
+            "fecha": "02/04/2026",
+            "resumen": "Aplicación para monitoreo de pacientes rurales."
+        },
+        {
+            "id": 3,
+            "titulo": "Portal de Extensión Universitaria",
+            "fecha": "10/04/2026",
+            "resumen": "Sistema web para gestión de proyectos."
+        }
+    ]
+
+    # 🔎 FILTRO POR NOMBRE O FECHA
+    if query:
+        query_lower = query.lower()
+        proyectos = [
+            p for p in proyectos
+            if query_lower in p["titulo"].lower() or query in p["fecha"]
+        ]
+
+    return render(request, 'proyectos/repositorio_proyectos.html', {
+        'proyectos': proyectos,
+        'query': query
+    })
+
+
+# 🟢 DETALLE DE PROYECTO
+def detalle_proyecto(request, id):
+    proyectos = [
+        {
+            "id": 1,
+            "titulo": "Sistema de Gestión Educativa",
+            "fecha": "15/03/2026",
+            "descripcion": "Sistema completo para gestionar alumnos, docentes y cursos."
+        },
+        {
+            "id": 2,
+            "titulo": "App de Salud Comunitaria",
+            "fecha": "02/04/2026",
+            "descripcion": "Aplicación para seguimiento de pacientes en zonas rurales."
+        },
+        {
+            "id": 3,
+            "titulo": "Portal de Extensión Universitaria",
+            "fecha": "10/04/2026",
+            "descripcion": "Plataforma institucional para gestión de proyectos."
+        }
+    ]
+
+    proyecto = next((p for p in proyectos if p["id"] == id), None)
+
+    if not proyecto:
+        raise Http404("Proyecto no encontrado")
+
+    return render(request, 'proyectos/detalle_repositorio.html', {
+        'proyecto': proyecto
+    })

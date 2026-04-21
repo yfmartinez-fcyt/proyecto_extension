@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 
 def inicio(request):
@@ -61,3 +62,12 @@ def inicio(request):
         },
     }
     return render(request, "core/inicio.html", context)
+
+def soporte_tecnico(request):
+
+    if request.method == 'POST':
+        # aquí luego puedes procesar datos
+        messages.success(request, "Tu mensaje fue enviado correctamente.")
+        return redirect('soporte_tecnico')
+
+    return render(request, 'core/soporte_tecnico.html')
