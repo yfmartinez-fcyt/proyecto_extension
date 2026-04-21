@@ -3,14 +3,6 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 import random
 
-@login_required
-def nuevo_proyecto(request):
-    return render(request, 'proyectos/nuevo_proyecto.html')
-
-
-@login_required
-def mis_proyectos(request):
-    return render(request, 'proyectos/mis_proyectos.html')
 
 # 🟢 PROYECTOS APROBADOS (CON BUSCADOR)
 def proyectos_aprobados(request):
@@ -136,3 +128,25 @@ def mis_proyectos(request):
     return render(request, 'proyectos/mis_proyectos.html', {
         'proyectos': proyectos
     })
+    
+@login_required
+def nuevo_proyecto(request):
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+
+        if accion == "borrador":
+            estado = "BORRADOR"
+        elif accion == "enviar":
+            estado = "PENDIENTE"
+        else:
+            estado = "BORRADOR"  # fallback
+
+        # Ejemplo: imprimir para probar
+        print("Estado:", estado)
+
+        # Aquí luego guardarías en la BD
+        # Proyecto.objects.create(..., estado=estado)
+
+        return redirect("mis_proyectos")
+
+    return render(request, "proyectos/nuevo_proyecto.html")
