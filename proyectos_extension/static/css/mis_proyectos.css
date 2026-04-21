@@ -1,0 +1,90 @@
+/* HEADER */
+.mp-header {
+    margin-bottom: 1rem;
+}
+
+.mp-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #163a8a;
+}
+
+.mp-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* CARD */
+.mp-card {
+    border-radius: 16px;
+    border: 1px solid #e9edf5;
+}
+
+/* TABLE */
+.mp-table th {
+    font-weight: 600;
+    color: #374151;
+}
+
+.mp-table td {
+    vertical-align: middle;
+}
+
+/* BADGES */
+.mp-badge {
+    padding: 0.4rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.mp-aprobado {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.mp-pendiente {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.mp-sugerencias {
+    background-color: #dbeafe;
+    color: #1e3a8a;
+}
+
+.mp-borrador {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.mp-rechazado {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* BOTÓN */
+.mp-btn-primary {
+    background-color: #163a8a;
+    color: white;
+    border-radius: 10px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.mp-btn-primary:hover {
+    background-color: #122e6b;
+    color: white;
+}
+
+.btn-outline-primary {
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+.btn-outline-danger {
+    border-radius: 10px;
+    font-size: 0.75rem;
+}

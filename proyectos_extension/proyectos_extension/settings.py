@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'apps.core.apps.CoreConfig',
     'apps.usuarios.apps.UsuariosConfig',  
     'apps.proyectos.apps.ProyectosConfig',
+    'apps.informes.apps.InformesConfig',
     # Agregamos las apps de nuestro proyecto, debido a nuestra estruruta debemos poner apps.nombre_de_la_app /Yani
 ]
 

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import Http404
-
+import random
 
 @login_required
 def nuevo_proyecto(request):
@@ -81,4 +81,58 @@ def detalle_proyecto(request, id):
 
     return render(request, 'proyectos/detalle_repositorio.html', {
         'proyecto': proyecto
+    })
+
+
+# MIS PROYECTOS 
+
+@login_required
+def mis_proyectos(request):
+
+    proyectos = [
+        # ✅ APROBADOS
+        {
+            "titulo": "Sistema Web de Biblioteca",
+            "estado": "aprobado",
+            "fecha": "2026-04-01"
+        },
+        {
+            "titulo": "Aplicación Móvil de Salud",
+            "estado": "aprobado",
+            "fecha": "2026-04-02"
+        },
+
+        # ⏳ PENDIENTES
+        {
+            "titulo": "Sistema de Inventario",
+            "estado": "pendiente",
+            "fecha": "2026-04-03"
+        },
+
+        # 🟡 CON SUGERENCIAS
+        {
+            "titulo": "Plataforma Educativa",
+            "estado": "sugerencias",
+            "fecha": "2026-04-04",
+            "comentario": "Mejorar la justificación del impacto social."
+        },
+
+        # 📝 BORRADOR
+        {
+            "titulo": "Sistema Contable",
+            "estado": "borrador",
+            "fecha": "2026-04-05"
+        },
+
+        # ❌ RECHAZADO
+        {
+            "titulo": "App de Delivery",
+            "estado": "rechazado",
+            "fecha": "2026-04-06",
+            "comentario": "El proyecto no cumple con los requisitos mínimos."
+        },
+    ]
+
+    return render(request, 'proyectos/mis_proyectos.html', {
+        'proyectos': proyectos
     })

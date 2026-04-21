@@ -1,18 +1,137 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Mis Proyectos{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mis_proyectos.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
-    <h1 class="mb-3">Mis Proyectos</h1>
 
-    <p>Estás en la página de Mis Proyectos</p>
+<div class="main-content mt-5 pt-4">
 
-    {% if user.is_authenticated %}
-        <p>Estás logueado como: <strong>{{ user.first_name }}</strong></p>
-        <p>Rol: {{ user.rol }}</p>
-    {% else %}
-        <p>No has iniciado sesión.</p>
-    {% endif %}
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="mp-header mb-4">
+            <h1 class="mp-title">Mis Proyectos</h1>
+            <p class="mp-subtitle">
+                Consulta el estado de tus proyectos y realiza acciones según corresponda.
+            </p>
+        </div>
+
+        <!-- CARD -->
+        <div class="card mp-card shadow-sm">
+
+            <div class="card-body">
+
+                <h5 class="card-title mb-3">Listado de Proyectos</h5>
+
+                <div class="table-responsive">
+
+                    <table class="table align-middle mp-table">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Proyecto</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Comentarios</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for p in proyectos %}
+                            <tr>
+
+                                <td class="fw-semibold">
+                                    {{ p.titulo }}
+                                </td>
+
+                                <td>
+                                    {% if p.estado == 'pendiente' %}
+                                        <span class="badge mp-badge mp-pendiente">Pendiente</span>
+
+                                    {% elif p.estado == 'aprobado' %}
+                                        <span class="badge mp-badge mp-aprobado">Aprobado</span>
+
+                                    {% elif p.estado == 'sugerencias' %}
+                                        <span class="badge mp-badge mp-sugerencias">Sugerencias</span>
+
+                                    {% elif p.estado == 'borrador' %}
+                                        <span class="badge mp-badge mp-borrador">Borrador</span>
+
+                                    {% elif p.estado == 'rechazado' %}
+                                        <span class="badge mp-badge mp-rechazado">Rechazado</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-muted">
+                                    {{ p.fecha }}
+                                </td>
+
+                                <td>
+                                    {% if p.comentario %}
+                                        <small class="text-muted">
+                                            {{ p.comentario }}
+                                        </small>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+
+                                    {% if p.estado == 'aprobado' %}
+
+                                        <a href="{% url 'presentar_informe' %}"
+                                        class="btn btn-sm mp-btn-primary">
+                                            Presentar Informe
+                                        </a>
+
+                                    {% elif p.estado == 'pendiente' or p.estado == 'borrador' or p.estado == 'sugerencias' %}
+
+                                        <!-- EDITAR -->
+                                        <a href="#"
+                                        class="btn btn-sm btn-outline-primary me-1">
+                                            Editar
+                                        </a>
+
+                                        <!-- ELIMINAR -->
+                                        <a href="#"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('¿Seguro que deseas eliminar este proyecto?')">
+                                            Eliminar
+                                        </a>
+
+                                    {% elif p.estado == 'rechazado' %}
+
+                                        <span class="text-muted small">
+                                            Sin acciones disponibles
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}
