@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Repositorio de Proyectos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/repositorio_proyectos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="repositorio-page">
+
+    <!-- HEADER -->
+    <section class="page-header mb-4">
+        <div class="header-content">
+            <h1 class="page-title">Proyectos Aprobados</h1>
+            <p class="page-subtitle mb-0">
+                Lista de proyectos aprobados por la institución
+            </p>
+        </div>
+    </section>
+
+    <!-- BUSCADOR -->
+    <section class="search-section mb-4">
+        <div class="content-card">
+            <form method="GET" class="row g-2">
+
+                <div class="col-md-8">
+                    <input 
+                        type="text" 
+                        name="q"
+                        value="{{ query|default:'' }}"
+                        class="form-control custom-input"
+                        placeholder="Buscar por nombre o fecha..."
+                    >
+                </div>
+
+                <div class="col-md-4 d-flex gap-2">
+                    <button class="btn btn-primary flex-fill">
+                        Buscar
+                    </button>
+
+                    <a href="{% url 'repositorio_proyectos' %}" class="btn btn-outline-secondary">
+                        Limpiar
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="results-section">
+
+        {% if proyectos %}
+
+            {% if query %}
+                <p class="results-info">
+                    Resultados para: <strong>"{{ query }}"</strong>
+                </p>
+            {% endif %}
+
+            <div class="row g-4">
+                {% for p in proyectos %}
+                <div class="col-12">
+
+                    <a href="{% url 'detalle_proyecto' p.id %}" class="project-link">
+                        <div class="content-card project-card">
+
+                            <span class="badge bg-primary-soft">
+                                Proyecto aprobado
+                            </span>
+
+                            <h3 class="project-title">
+                                {{ p.titulo }}
+                            </h3>
+
+                            <p class="project-date">
+                                <i class="bi bi-calendar"></i> {{ p.fecha }}
+                            </p>
+
+                            <p class="project-summary">
+                                {{ p.resumen }}
+                            </p>
+
+                            <span class="project-link-text">
+                                Ver más →
+                            </span>
+
+                        </div>
+                    </a>
+
+                </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <div class="content-card text-center empty-state">
+                <p class="empty-text">
+                    No se encontraron proyectos
+                </p>
+
+                {% if query %}
+                <p class="empty-subtext">
+                    Intenta con otro nombre o fecha
+                </p>
+                {% endif %}
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/repositorio_proyectos.js' %}"></script>
+{% endblock %}
