@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("form-proponente");
 
+  // 1. ELEMENTOS DEL FORMULARIO (INPUTS PRINCIPALES)
+  const form = document.getElementById("form-proponente");
   const nombre = document.getElementById("nombre_proponente");
   const apellido = document.getElementById("apellido_proponente");
   const correo = document.getElementById("correo_proponente");
@@ -13,12 +14,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const organizaciones = document.getElementById("organizaciones-textarea");
   const fundamentacion = document.getElementById("fundamentacion");
 
-  const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
-  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  const regexTelefono = /^\+?[0-9\s\-()]{6,20}$/;
+  // =====================================================
+  // 2. EXPRESIONES REGULARES (VALIDACIONES)
+  // =====================================================
+  const regexNombreApellido = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]{2,80}$/;
+  const regexDocente = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]{5,100}$/;
+  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const regexTelefonoParaguay = /^(\+5959\d{8}|5959\d{8}|09\d{8})$/;
 
+  // =====================================================
+  // 3. MANEJO DE ERRORES (MOSTRAR / LIMPIAR)
+  // =====================================================
   function obtenerContenedorError(input) {
-    return input.parentElement.querySelector(".error-message");
+    let error = input.parentElement.querySelector(".error-message");
+
+    if (!error) {
+      error = document.createElement("small");
+      error.className = "error-message";
+      input.parentElement.appendChild(error);
+    }
+
+    return error;
   }
 
   function mostrarError(input, mensaje) {
@@ -55,6 +71,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // =====================================================
+  // 4. VALIDACIONES DEL PROPONENTE
+  // (Nombre, Apellido, Correo, Teléfono, Estudiante, Docente)
+  // =====================================================
   function toggleDocenteCampo() {
     if (!docenteCampo) return;
 
@@ -73,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validarNombre() {
     if (!nombre) return true;
+
     const valor = nombre.value.trim();
 
     if (valor === "") {
@@ -80,8 +101,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    if (!regexSoloLetras.test(valor)) {
-      mostrarError(nombre, "El nombre solo debe contener letras.");
+    if (!regexNombreApellido.test(valor)) {
+      mostrarError(nombre, "El nombre debe tener entre 2 y 80 caracteres, solo letras y espacios.");
       return false;
     }
 
@@ -91,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validarApellido() {
     if (!apellido) return true;
+
     const valor = apellido.value.trim();
 
     if (valor === "") {
@@ -98,8 +120,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    if (!regexSoloLetras.test(valor)) {
-      mostrarError(apellido, "El apellido solo debe contener letras.");
+    if (!regexNombreApellido.test(valor)) {
+      mostrarError(apellido, "El apellido debe tener entre 2 y 80 caracteres, solo letras y espacios.");
       return false;
     }
 
@@ -127,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validarTelefono() {
     if (!telefono) return true;
+
     const valor = telefono.value.trim();
 
     if (valor === "") {
@@ -134,8 +157,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    if (!regexTelefono.test(valor)) {
-      mostrarError(telefono, "Ingrese un número de teléfono válido.");
+    if (!regexTelefonoParaguay.test(valor)) {
+      mostrarError(telefono, "Ingrese un teléfono válido. Ej: 0981123456, 595981123456 o +595981123456.");
       return false;
     }
 
@@ -166,8 +189,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
       }
 
-      if (!regexSoloLetras.test(valor)) {
-        mostrarError(docenteResponsable, "El nombre del docente responsable solo debe contener letras.");
+      if (!regexDocente.test(valor)) {
+        mostrarError(docenteResponsable, "El docente responsable debe tener entre 5 y 100 caracteres, solo letras y espacios.");
         return false;
       }
     }
@@ -176,6 +199,9 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   }
 
+  // =====================================================
+  // 5. EVENTOS EN TIEMPO REAL (PROPONENTE)
+  // =====================================================
   if (nombre) nombre.addEventListener("input", validarNombre);
   if (apellido) apellido.addEventListener("input", validarApellido);
   if (correo) correo.addEventListener("input", validarCorreo);
@@ -184,6 +210,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (estudianteSi) estudianteSi.addEventListener("change", toggleDocenteCampo);
   if (estudianteNo) estudianteNo.addEventListener("change", toggleDocenteCampo);
 
+
+  // =====================================================
+  // 6. DENOMINACIÓN Y SUBLÍNEAS
+  // =====================================================
   const denominacionSelect = document.getElementById("denominacion-select");
   const sublineasAmbiente = document.getElementById("sublineas-ambiente");
   const sublineasComunidad = document.getElementById("sublineas-comunidad");
@@ -237,6 +267,9 @@ document.addEventListener("DOMContentLoaded", function () {
     mostrarSublineaCorrespondiente();
   }
 
+  // =====================================================
+  // 7. UNIDADES ACADÉMICAS DINÁMICAS
+  // =====================================================
   const opcionesUnidades = [
     "Facultad de Ciencias y Tecnologías",
     "Facultad Ciencias de la Producción",
@@ -368,6 +401,10 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarEstadoBotonAgregar();
   }
 
+
+  // =====================================================
+  // 8. FORMATO AUTOMÁTICO DE LISTAS (GUIONES)
+  // =====================================================
   function aplicarGuionAutomatico(textareaId) {
     const textarea = document.getElementById(textareaId);
     if (!textarea) return;
@@ -382,6 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const before = value.substring(0, start);
         const after = value.substring(end);
 
+
         this.value = before + "\n- " + after;
         this.selectionStart = this.selectionEnd = start + 3;
       }
@@ -392,13 +430,270 @@ document.addEventListener("DOMContentLoaded", function () {
   aplicarGuionAutomatico("objetivos-textarea");
   aplicarGuionAutomatico("metas-textarea");
 
+  // =====================================================
+  // 9. CAMPOS DEL PROYECTO
+  // (Fechas, horas, carrera, curso, etc.)
+  // =====================================================
   const fechaInicio = document.getElementById("fecha_inicio");
   const fechaFin = document.getElementById("fecha_fin");
   const horas = document.getElementById("horas");
   const carrera = document.getElementById("carrera");
   const curso = document.getElementById("curso");
   const proponente = document.getElementById("proponente");
+  const objetivos = document.getElementById("objetivos-textarea");
+  const metodologia = document.getElementById("metodologia");
+  const metas = document.getElementById("metas-textarea");
+  const resultados = document.getElementById("resultados");
+  const recursosHumanos = document.getElementById("recursos_humanos");
+  const beneficiarios = document.getElementById("beneficiarios");
+  const localizacion = document.getElementById("localizacion");
+  const presupuesto = document.getElementById("presupuesto");
+  const declaracionRevision = document.getElementById("declaracion_revision");
 
+  // =====================================================
+  // 10. FUNCIONES AUXILIARES PARA VALIDAR TEXTOS
+  // =====================================================
+  function limpiarTextoLista(valor) {
+    return valor.replace(/^-+\s*/gm, "").trim();
+  }
+
+  function contarPalabras(valor) {
+    return limpiarTextoLista(valor)
+      .split(/\s+/)
+      .filter(function (palabra) {
+        return palabra.length > 0;
+      }).length;
+  }
+
+  function esTextoRepetido(valor) {
+    const limpio = limpiarTextoLista(valor).replace(/\s+/g, "").toLowerCase();
+    return limpio.length >= 6 && /^([a-záéíóúñü])\1+$/.test(limpio);
+  }
+
+  function esSoloSimbolos(valor) {
+    const limpio = limpiarTextoLista(valor);
+    return limpio !== "" && !/[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9]/.test(limpio);
+  }
+
+  function validarTextareaAvanzado(input, nombreCampo, minimoCaracteres, minimoPalabras) {
+    if (!input) return true;
+
+    const valor = input.value.trim();
+    const textoLimpio = limpiarTextoLista(valor);
+
+    if (valor === "" || textoLimpio === "") {
+      mostrarError(input, `${nombreCampo} es obligatorio.`);
+      return false;
+    }
+
+    if (textoLimpio.length < minimoCaracteres) {
+      mostrarError(input, `${nombreCampo} debe tener al menos ${minimoCaracteres} caracteres.`);
+      return false;
+    }
+
+    if (contarPalabras(valor) < minimoPalabras) {
+      mostrarError(input, `${nombreCampo} debe contener al menos ${minimoPalabras} palabras.`);
+      return false;
+    }
+
+    if (esTextoRepetido(valor)) {
+      mostrarError(input, `${nombreCampo} no puede contener texto repetido sin sentido.`);
+      return false;
+    }
+
+    if (esSoloSimbolos(valor)) {
+      mostrarError(input, `${nombreCampo} no puede contener solo símbolos.`);
+      return false;
+    }
+
+    limpiarError(input);
+    return true;
+  }
+
+  // =====================================================
+  // 11. VALIDACIONES DE TEXTOS DEL PROYECTO
+  // (Objetivos, metodología, metas, resultados, etc.)
+  // =====================================================
+  function validarObjetivos() {
+    return validarTextareaAvanzado(objetivos, "Los objetivos generales y específicos", 30, 5);
+  }
+
+  function validarMetodologia() {
+    return validarTextareaAvanzado(metodologia, "La metodología de implementación", 50, 8);
+  }
+
+  function validarMetas() {
+    return validarTextareaAvanzado(metas, "Las metas", 20, 3);
+  }
+
+  function validarResultados() {
+    return validarTextareaAvanzado(resultados, "Los resultados esperados", 30, 5);
+  }
+
+  function validarRecursosHumanos() {
+    return validarTextareaAvanzado(recursosHumanos, "Los recursos humanos participantes", 10, 2);
+  }
+
+  function validarBeneficiarios() {
+    return validarTextareaAvanzado(beneficiarios, "La identificación de beneficiarios", 20, 4);
+  }
+
+  function validarLocalizacion() {
+    if (!localizacion) return true;
+
+    if (localizacion.value === "") {
+      mostrarError(localizacion, "Debe seleccionar una localización.");
+      return false;
+    }
+
+    limpiarError(localizacion);
+    return true;
+  }
+
+  function validarPresupuesto() {
+    if (!presupuesto) return true;
+
+    const valor = presupuesto.value.trim();
+    const textoLimpio = limpiarTextoLista(valor);
+
+    if (valor === "" || textoLimpio === "") {
+      mostrarError(presupuesto, "El presupuesto es obligatorio.");
+      return false;
+    }
+
+    if (textoLimpio.length < 5) {
+      mostrarError(presupuesto, "El presupuesto debe tener al menos 5 caracteres.");
+      return false;
+    }
+
+    if (/-\s*\d+/.test(valor)) {
+      mostrarError(presupuesto, "El presupuesto no puede contener montos negativos.");
+      return false;
+    }
+
+    limpiarError(presupuesto);
+    return true;
+  }
+
+  // =====================================================
+  // 12. VALIDACIÓN DEL CRONOGRAMA
+  // =====================================================
+  function validarCronograma() {
+    const filas = document.querySelectorAll(".cronograma-table tbody tr");
+    const actividadesUsadas = [];
+    let valido = true;
+
+    filas.forEach(function (fila) {
+      const actividades = fila.querySelectorAll('input[name^="cronograma_actividad_"]');
+      const fechaInicio = fila.querySelector('input[name^="cronograma_inicio_"]');
+      const dias = fila.querySelector('input[name^="cronograma_dias_"]');
+      const hora = fila.querySelector('input[name^="cronograma_hora_"]');
+      const fechaFin = fila.querySelector('input[name^="cronograma_fin_"]');
+      const credito = fila.querySelector('input[name^="cronograma_credito_"]');
+
+      const camposFila = [...actividades, fechaInicio, dias, hora, fechaFin, credito].filter(Boolean);
+      const filaTieneDatos = camposFila.some(function (input) {
+        return input.value.trim() !== "";
+      });
+
+      if (!filaTieneDatos) return;
+
+      actividades.forEach(function (actividad) {
+        const valor = actividad.value.trim();
+        const limpio = limpiarTextoLista(valor).toLowerCase();
+
+        if (valor === "" || limpio === "") {
+          mostrarError(actividad, "La actividad es obligatoria.");
+          valido = false;
+        } else if (limpio.length < 5) {
+          mostrarError(actividad, "La actividad debe tener al menos 5 caracteres.");
+          valido = false;
+        } else if (actividadesUsadas.includes(limpio)) {
+          mostrarError(actividad, "No se permiten actividades duplicadas.");
+          valido = false;
+        } else {
+          actividadesUsadas.push(limpio);
+          limpiarError(actividad);
+        }
+      });
+
+      if (!fechaInicio || fechaInicio.value === "") {
+        mostrarError(fechaInicio, "La fecha de inicio es obligatoria.");
+        valido = false;
+      } else {
+        limpiarError(fechaInicio);
+      }
+
+      if (!dias || dias.value.trim() === "" || !Number.isInteger(Number(dias.value)) || Number(dias.value) < 1) {
+        mostrarError(dias, "Los días deben ser un número entero positivo.");
+        valido = false;
+      } else {
+        limpiarError(dias);
+      }
+
+      if (!hora || hora.value === "") {
+        mostrarError(hora, "La hora es obligatoria.");
+        valido = false;
+      } else {
+        limpiarError(hora);
+      }
+
+      if (!fechaFin || fechaFin.value === "") {
+        mostrarError(fechaFin, "La fecha de finalización es obligatoria.");
+        valido = false;
+      } else if (fechaInicio && fechaInicio.value !== "" && fechaFin.value < fechaInicio.value) {
+        mostrarError(fechaFin, "La fecha de finalización no puede ser menor que la fecha de inicio.");
+        valido = false;
+      } else {
+        limpiarError(fechaFin);
+      }
+
+      if (!credito || credito.value.trim() === "" || !Number.isInteger(Number(credito.value)) || Number(credito.value) < 1) {
+        mostrarError(credito, "Las horas/crédito deben ser un número entero positivo.");
+        valido = false;
+      } else {
+        limpiarError(credito);
+      }
+    });
+
+    return valido;
+  }
+
+  // =====================================================
+  // 13. VALIDACIÓN DE CONFIRMACIÓN FINAL
+  // =====================================================
+  function validarDeclaracionRevision() {
+    if (!declaracionRevision) return true;
+
+    const contenedor = declaracionRevision.closest(".declaration-box");
+    let error = contenedor ? contenedor.parentElement.querySelector(".error-message-declaracion") : null;
+
+    if (!declaracionRevision.checked) {
+      if (!error && contenedor) {
+        error = document.createElement("small");
+        error.className = "error-message error-message-declaracion";
+        error.style.display = "block";
+        contenedor.parentElement.appendChild(error);
+      }
+
+      if (error) {
+        error.textContent = "Debe confirmar que los datos ingresados son correctos.";
+      }
+
+      return false;
+    }
+
+    if (error) {
+      error.textContent = "";
+      error.style.display = "none";
+    }
+
+    return true;
+  }
+
+  // =====================================================
+  // 14. VALIDACIONES GENERALES DEL PROYECTO
+  // =====================================================
   function validarSoloSiTieneValor(input, mensajeVacio, mensajeInvalido, regex) {
     if (!input) return true;
     const valor = input.value.trim();
@@ -620,18 +915,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function validarFundamentacion() {
-    if (!fundamentacion) return true;
-    const valor = fundamentacion.value.trim();
-
-    if (valor === "") {
-      mostrarError(fundamentacion, "La fundamentación es obligatoria.");
-      return false;
-    }
-
-    limpiarError(fundamentacion);
-    return true;
+    return validarTextareaAvanzado(fundamentacion, "La fundamentación", 50, 8);
   }
 
+  // =====================================================
+  // 15. EVENTOS DE VALIDACIÓN EN TIEMPO REAL
+  // =====================================================
   if (fechaInicio) fechaInicio.addEventListener("change", validarFechaInicioFin);
   if (fechaFin) fechaFin.addEventListener("change", validarFechaInicioFin);
   if (hora) hora.addEventListener("change", validarHora);
@@ -659,6 +948,106 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  if (objetivos) objetivos.addEventListener("input", validarObjetivos);
+  if (metodologia) metodologia.addEventListener("input", validarMetodologia);
+  if (metas) metas.addEventListener("input", validarMetas);
+  if (resultados) resultados.addEventListener("input", validarResultados);
+  if (recursosHumanos) recursosHumanos.addEventListener("input", validarRecursosHumanos);
+  if (beneficiarios) beneficiarios.addEventListener("input", validarBeneficiarios);
+  if (localizacion) localizacion.addEventListener("change", validarLocalizacion);
+  if (presupuesto) presupuesto.addEventListener("input", validarPresupuesto);
+  if (declaracionRevision) declaracionRevision.addEventListener("change", validarDeclaracionRevision);
+
+  // =====================================================
+  // 16. WIZARD DE PASOS (NAVEGACIÓN + VALIDACIÓN POR ETAPA)
+  // =====================================================
+  const panels = Array.from(document.querySelectorAll(".wizard-panel"));
+  const indicators = Array.from(document.querySelectorAll(".wizard-step"));
+  const nextButtons = document.querySelectorAll("[data-next-step]");
+  const prevButtons = document.querySelectorAll("[data-prev-step]");
+  let currentStep = 1;
+
+  function obtenerPrimerErrorVisible() {
+    const errores = Array.from(document.querySelectorAll(".error-message, .error-message-declaracion"));
+    return errores.find(function (error) {
+      return error.textContent.trim() !== "" && window.getComputedStyle(error).display !== "none";
+    });
+  }
+
+  function actualizarUIWizard() {
+    panels.forEach(function (panel) {
+      const panelStep = Number(panel.dataset.step);
+      panel.classList.toggle("is-active", panelStep === currentStep);
+    });
+
+    indicators.forEach(function (indicator) {
+      const indicatorStep = Number(indicator.dataset.stepIndicator);
+      indicator.classList.toggle("is-active", indicatorStep === currentStep);
+      indicator.classList.toggle("is-completed", indicatorStep < currentStep);
+    });
+  }
+
+  function validarPasoActual(step) {
+    if (step === 1) {
+      return (
+        validarNombre() &&
+        validarApellido() &&
+        validarCorreo() &&
+        validarTelefono() &&
+        validarEstudiante() &&
+        validarDocenteResponsable()
+      );
+    }
+
+    if (step === 2) {
+      return (
+        validarDenominacion() &&
+        validarSublinea() &&
+        validarFechaInicioFin() &&
+        validarHora() &&
+        validarHoras() &&
+        validarHorasEnteras() &&
+        validarUnidadAcademica() &&
+        validarCamposTextoProyecto() &&
+        validarOrganizaciones() &&
+        validarFundamentacion() &&
+        validarObjetivos() &&
+        validarMetodologia() &&
+        validarMetas() &&
+        validarResultados()
+      );
+    }
+
+    return true;
+  }
+
+  nextButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (!validarPasoActual(currentStep)) {
+        const primerError = obtenerPrimerErrorVisible();
+        if (primerError) {
+          primerError.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
+      currentStep = Math.min(currentStep + 1, panels.length);
+      actualizarUIWizard();
+      if (form) form.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  prevButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      currentStep = Math.max(currentStep - 1, 1);
+      actualizarUIWizard();
+      if (form) form.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // =====================================================
+  // 17. VALIDACIÓN FINAL AL ENVIAR EL FORMULARIO
+  // =====================================================
   if (form) {
     form.addEventListener("submit", function (e) {
       const esNombreValido = validarNombre();
@@ -678,6 +1067,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const esTextoProyectoValido = validarCamposTextoProyecto();
       const esOrganizacionValida = validarOrganizaciones();
       const esFundamentacionValida = validarFundamentacion();
+      const esObjetivosValido = validarObjetivos();
+      const esMetodologiaValida = validarMetodologia();
+      const esMetasValida = validarMetas();
+      const esResultadosValido = validarResultados();
+      const esRecursosHumanosValido = validarRecursosHumanos();
+      const esBeneficiariosValido = validarBeneficiarios();
+      const esLocalizacionValida = validarLocalizacion();
+      const esPresupuestoValido = validarPresupuesto();
+      const esCronogramaValido = validarCronograma();
+      const esDeclaracionValida = validarDeclaracionRevision();
 
       if (
         !esNombreValido ||
@@ -695,12 +1094,35 @@ document.addEventListener("DOMContentLoaded", function () {
         !esUnidadValida ||
         !esTextoProyectoValido ||
         !esOrganizacionValida ||
-        !esFundamentacionValida
+        !esFundamentacionValida ||
+        !esObjetivosValido ||
+        !esMetodologiaValida ||
+        !esMetasValida ||
+        !esResultadosValido ||
+        !esRecursosHumanosValido ||
+        !esBeneficiariosValido ||
+        !esLocalizacionValida ||
+        !esPresupuestoValido ||
+        !esCronogramaValido ||
+        !esDeclaracionValida
       ) {
+        const primerError = obtenerPrimerErrorVisible();
+
+        if (primerError) {
+          primerError.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+
         e.preventDefault();
       }
     });
   }
 
+  // =====================================================
+  // 18. INICIALIZACIÓN DEL FORMULARIO
+  // =====================================================
   toggleDocenteCampo();
+  actualizarUIWizard();
 });

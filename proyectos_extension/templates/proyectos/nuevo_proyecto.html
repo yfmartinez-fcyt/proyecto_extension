@@ -12,16 +12,42 @@
 <section class="hero-section">
   <h2 class="hero-title">Formulario de Programa, Proyecto o Actividad</h2>
   <p class="hero-description">
-    Complete el siguiente formulario con la información detallada de su propuesta académica.
+    Complete este formulario con la información requerida para la evaluación de su propuesta académica.
     <br />
-    Asegúrese de adjuntar todos los indicadores necesarios para la evaluación.
+    Verifique los datos antes del envío para agilizar el proceso de revisión institucional.
   </p>
 </section>
 
 <form class="form-wrapper" id="form-proponente" method="post" novalidate>
   {% csrf_token %}
 
-  <main class="main-proponente">
+  <section class="wizard-shell">
+    <header class="wizard-header">
+      <p class="wizard-kicker">Formulario institucional</p>
+      <h3 class="wizard-title">Registro de programa, proyecto o actividad</h3>
+      <p class="wizard-subtitle">Complete las etapas del formulario para remitir su propuesta de extensión.</p>
+
+      <div class="wizard-steps" aria-label="Progreso del formulario">
+        <div class="wizard-step is-active" data-step-indicator="1">
+          <span class="wizard-step-circle"><i class="bi bi-person-fill" aria-hidden="true"></i></span>
+          <span class="wizard-step-label">Datos del Proponente</span>
+        </div>
+        <div class="wizard-step" data-step-indicator="2">
+          <span class="wizard-step-circle"><i class="bi bi-folder2-open" aria-hidden="true"></i></span>
+          <span class="wizard-step-label">Datos del Proyecto</span>
+        </div>
+        <div class="wizard-step" data-step-indicator="3">
+          <span class="wizard-step-circle"><i class="bi bi-clipboard-check" aria-hidden="true"></i></span>
+          <span class="wizard-step-label">Actividad</span>
+        </div>
+        <div class="wizard-step" data-step-indicator="4">
+          <span class="wizard-step-circle"><i class="bi bi-check-lg" aria-hidden="true"></i></span>
+          <span class="wizard-step-label">Confirmación</span>
+        </div>
+      </div>
+    </header>
+
+  <main class="main-proponente wizard-panel is-active" data-step="1">
     <h2 class="section-heading">Datos del Proponente</h2>
 
     <div class="form-grid">
@@ -73,9 +99,12 @@
         <small class="error-message"></small>
       </div>
     </div>
+    <div class="wizard-actions">
+      <button type="button" class="wizard-btn wizard-btn-primary" data-next-step>Siguiente</button>
+    </div>
   </main>
 
-  <main class="main-proyecto">
+  <main class="main-proyecto wizard-panel" data-step="2">
     <h2 class="section-heading">Formulario de Programa, Proyecto o Actividad</h2>
 
     <div class="form-grid">
@@ -213,9 +242,13 @@
         <small class="error-message"></small>
       </div>
     </div>
+    <div class="wizard-actions">
+      <button type="button" class="wizard-btn wizard-btn-secondary" data-prev-step>Anterior</button>
+      <button type="button" class="wizard-btn wizard-btn-primary" data-next-step>Siguiente</button>
+    </div>
   </main>
 
-  <main class="main-proyecto">
+  <main class="main-proyecto wizard-panel" data-step="3">
     <h2 class="section-heading">Indicadores de evaluación</h2>
 
     <div class="form-grid">
@@ -339,7 +372,11 @@
         </div>
       </div>
     </div>
+    <div class="wizard-actions">
+      <button type="button" class="wizard-btn wizard-btn-secondary" data-prev-step>Anterior</button>
+    </div>
   </main>
+  </section>
 </form>
 {% endblock %}
 
