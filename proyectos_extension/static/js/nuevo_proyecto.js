@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
       error.textContent = mensaje;
       error.style.display = "block";
     }
+    input.classList.add("is-invalid");
     input.style.border = "1px solid red";
   }
 
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       error.textContent = "";
       error.style.display = "none";
     }
+    input.classList.remove("is-invalid");
     input.style.border = "";
   }
 
@@ -212,74 +214,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // =====================================================
-  // 6. DENOMINACIÓN Y SUBLÍNEAS
+  // 6. CATÁLOGO DESDE BD (líneas, sublíneas, unidades)
   // =====================================================
+  const catalogoEl = document.getElementById("catalogo-formulario");
+  const catalogo = catalogoEl
+    ? JSON.parse(catalogoEl.textContent)
+  : { lineas: [], unidades: [] };
+
   const denominacionSelect = document.getElementById("denominacion-select");
-  const sublineasAmbiente = document.getElementById("sublineas-ambiente");
-  const sublineasComunidad = document.getElementById("sublineas-comunidad");
-  const sublineasDesarrollo = document.getElementById("sublineas-desarrollo");
-  const sublineaAmbiente = document.getElementById("sublinea_ambiente");
-  const sublineaComunidad = document.getElementById("sublinea_comunidad");
-  const sublineaDesarrollo = document.getElementById("sublinea_desarrollo");
+  const sublineaContainer = document.getElementById("sublinea-container");
+  const sublineaSelect = document.getElementById("sublinea-select");
   const hora = document.getElementById("hora");
 
-  function ocultarTodasLasSublineas() {
-    if (sublineasAmbiente) sublineasAmbiente.style.display = "none";
-    if (sublineasComunidad) sublineasComunidad.style.display = "none";
-    if (sublineasDesarrollo) sublineasDesarrollo.style.display = "none";
+  function obtenerLineaCatalogo(lineaId) {
+    return (catalogo.lineas || []).find(function (l) {
+      return String(l.id) === String(lineaId);
+    });
   }
 
-  function limpiarSublineas() {
-    if (sublineaAmbiente) {
-      sublineaAmbiente.value = "";
-      limpiarError(sublineaAmbiente);
-    }
-    if (sublineaComunidad) {
-      sublineaComunidad.value = "";
-      limpiarError(sublineaComunidad);
-    }
-    if (sublineaDesarrollo) {
-      sublineaDesarrollo.value = "";
-      limpiarError(sublineaDesarrollo);
-    }
-  }
+  function poblarSublineas() {
+    if (!sublineaSelect || !denominacionSelect) return;
 
-  function mostrarSublineaCorrespondiente() {
-    if (!denominacionSelect) return;
-    ocultarTodasLasSublineas();
-    limpiarSublineas();
+    const lineaId = denominacionSelect.value;
+    sublineaSelect.innerHTML = '<option value="">Seleccione una sublínea</option>';
 
-    if (denominacionSelect.value === "ambiente" && sublineasAmbiente) {
-      sublineasAmbiente.style.display = "block";
-    } else if (denominacionSelect.value === "comunidad" && sublineasComunidad) {
-      sublineasComunidad.style.display = "block";
-    } else if (denominacionSelect.value === "desarrollo" && sublineasDesarrollo) {
-      sublineasDesarrollo.style.display = "block";
+    const linea = obtenerLineaCatalogo(lineaId);
+    if (linea && linea.sublineas) {
+      linea.sublineas.forEach(function (sub) {
+        const opt = document.createElement("option");
+        opt.value = String(sub.id);
+        opt.textContent = sub.nombre;
+        sublineaSelect.appendChild(opt);
+      });
     }
+
+    if (sublineaContainer) {
+      sublineaContainer.style.display = lineaId ? "block" : "none";
+    }
+    limpiarError(sublineaSelect);
   }
 
   if (denominacionSelect) {
     denominacionSelect.addEventListener("change", function () {
-      mostrarSublineaCorrespondiente();
+      poblarSublineas();
       validarDenominacion();
       validarSublinea();
     });
-    mostrarSublineaCorrespondiente();
+    poblarSublineas();
   }
 
   // =====================================================
   // 7. UNIDADES ACADÉMICAS DINÁMICAS
   // =====================================================
-  const opcionesUnidades = [
-    "Facultad de Ciencias y Tecnologías",
-    "Facultad Ciencias de la Producción",
-    "Facultad de Ciencias de la Salud",
-    "Facultad de Ciencias Médicas",
-    "Facultad de Odontología",
-    "Facultad de Ciencias Económicas",
-    "Facultad de Ciencias Sociales, Políticas y Humanidades",
-    "Escuela Superior de Artes y Desarrollo de Talentos"
-  ];
+  const opcionesUnidades = catalogo.unidades || [];
 
   const containerUnidades = document.getElementById("unidades-academicas-container");
   const btnAgregarUnidad = document.getElementById("agregar-unidad-btn");
@@ -303,11 +290,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const seleccionadas = getUnidadesSeleccionadas();
 
     opcionesUnidades.forEach(function (opcion) {
-      if (!seleccionadas.includes(opcion) || opcion === selected) {
+      const id = String(opcion.id);
+      if (!seleccionadas.includes(id) || id === String(selected)) {
         const opt = document.createElement("option");
-        opt.value = opcion;
-        opt.textContent = opcion;
-        if (opcion === selected) opt.selected = true;
+        opt.value = id;
+        opt.textContent = opcion.nombre;
+        if (id === String(selected)) opt.selected = true;
         select.appendChild(opt);
       }
     });
@@ -333,11 +321,12 @@ document.addEventListener("DOMContentLoaded", function () {
       sel.appendChild(optionDefault);
 
       opcionesUnidades.forEach(function (opcion) {
-        if (!valores.includes(opcion) || opcion === valorActual) {
+        const id = String(opcion.id);
+        if (!valores.includes(id) || id === valorActual) {
           const opt = document.createElement("option");
-          opt.value = opcion;
-          opt.textContent = opcion;
-          if (opcion === valorActual) opt.selected = true;
+          opt.value = id;
+          opt.textContent = opcion.nombre;
+          if (id === valorActual) opt.selected = true;
           sel.appendChild(opt);
         }
       });
@@ -473,6 +462,20 @@ document.addEventListener("DOMContentLoaded", function () {
   function esSoloSimbolos(valor) {
     const limpio = limpiarTextoLista(valor);
     return limpio !== "" && !/[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9]/.test(limpio);
+  }
+
+  function validarTextareaObligatorio(input, nombreCampo) {
+    if (!input) return true;
+
+    const textoLimpio = limpiarTextoLista(input.value.trim());
+
+    if (textoLimpio === "") {
+      mostrarError(input, `${nombreCampo} es obligatorio.`);
+      return false;
+    }
+
+    limpiarError(input);
+    return true;
   }
 
   function validarTextareaAvanzado(input, nombreCampo, minimoCaracteres, minimoPalabras) {
@@ -770,36 +773,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function validarSublinea() {
-    if (!denominacionSelect) return true;
+    if (!denominacionSelect || !sublineaSelect) return true;
 
     if (denominacionSelect.value === "") {
+      limpiarError(sublineaSelect);
       return true;
     }
 
-    if (denominacionSelect.value === "ambiente") {
-      if (!sublineaAmbiente || sublineaAmbiente.value === "") {
-        if (sublineaAmbiente) mostrarError(sublineaAmbiente, "Debe seleccionar una sublínea.");
-        return false;
-      }
-      limpiarError(sublineaAmbiente);
+    if (sublineaSelect.value === "") {
+      mostrarError(sublineaSelect, "Debe seleccionar una sublínea.");
+      return false;
     }
 
-    if (denominacionSelect.value === "comunidad") {
-      if (!sublineaComunidad || sublineaComunidad.value === "") {
-        if (sublineaComunidad) mostrarError(sublineaComunidad, "Debe seleccionar una sublínea.");
-        return false;
-      }
-      limpiarError(sublineaComunidad);
-    }
-
-    if (denominacionSelect.value === "desarrollo") {
-      if (!sublineaDesarrollo || sublineaDesarrollo.value === "") {
-        if (sublineaDesarrollo) mostrarError(sublineaDesarrollo, "Debe seleccionar una sublínea.");
-        return false;
-      }
-      limpiarError(sublineaDesarrollo);
-    }
-
+    limpiarError(sublineaSelect);
     return true;
   }
 
@@ -840,19 +826,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let valido = true;
 
     selects.forEach(function (sel) {
-      const contenedor = sel.parentElement.querySelector(".error-message");
-      if (contenedor) contenedor.remove();
-
       if (sel.value === "") {
-        let error = document.createElement("small");
-        error.className = "error-message";
-        error.textContent = "Debe seleccionar una unidad académica.";
-        error.style.display = "block";
-        sel.parentElement.appendChild(error);
-        sel.style.border = "1px solid red";
+        mostrarError(sel, "Debe seleccionar una unidad académica.");
         valido = false;
       } else {
-        sel.style.border = "";
+        limpiarError(sel);
       }
     });
 
@@ -874,7 +852,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function validarCamposTextoProyecto() {
+  function validarCamposTextoPaso2() {
     const regexTexto = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9\s.,\-()]+$/;
 
     const carreraValida = validarSoloSiTieneValor(
@@ -891,27 +869,41 @@ document.addEventListener("DOMContentLoaded", function () {
       regexTexto
     );
 
-    const proponenteValido = validarSoloSiTieneValor(
+    return carreraValida && cursoValido;
+  }
+
+  function validarProponente() {
+    const regexTexto = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9\s.,\-()]+$/;
+
+    return validarSoloSiTieneValor(
       proponente,
       "El campo proponente es obligatorio.",
       "El campo proponente contiene caracteres no permitidos.",
       regexTexto
     );
-
-    return carreraValida && cursoValido && proponenteValido;
   }
 
   function validarOrganizaciones() {
-    if (!organizaciones) return true;
-    const valor = organizaciones.value.trim();
+    return validarTextareaObligatorio(organizaciones, "Las organizaciones involucradas");
+  }
 
-    if (valor === "" || valor === "-") {
-      mostrarError(organizaciones, "Debe ingresar al menos una organización.");
-      return false;
-    }
-
-    limpiarError(organizaciones);
-    return true;
+  function validarPaso2ParaAvanzar() {
+    return (
+      validarDenominacion() &&
+      validarSublinea() &&
+      validarFechaInicioFin() &&
+      validarHora() &&
+      validarHoras() &&
+      validarHorasEnteras() &&
+      validarUnidadAcademica() &&
+      validarCamposTextoPaso2() &&
+      validarOrganizaciones() &&
+      validarTextareaObligatorio(fundamentacion, "La fundamentación") &&
+      validarTextareaObligatorio(objetivos, "Los objetivos generales y específicos") &&
+      validarTextareaObligatorio(metodologia, "La metodología de implementación") &&
+      validarTextareaObligatorio(metas, "Las metas") &&
+      validarTextareaObligatorio(resultados, "Los resultados esperados")
+    );
   }
 
   function validarFundamentacion() {
@@ -932,13 +924,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  if (sublineaAmbiente) sublineaAmbiente.addEventListener("change", validarSublinea);
-  if (sublineaComunidad) sublineaComunidad.addEventListener("change", validarSublinea);
-  if (sublineaDesarrollo) sublineaDesarrollo.addEventListener("change", validarSublinea);
+  if (sublineaSelect) sublineaSelect.addEventListener("change", validarSublinea);
 
   if (carrera) carrera.addEventListener("input", limpiarError.bind(null, carrera));
   if (curso) curso.addEventListener("input", limpiarError.bind(null, curso));
-  if (proponente) proponente.addEventListener("input", limpiarError.bind(null, proponente));
+  if (proponente) proponente.addEventListener("input", validarProponente);
   if (organizaciones) organizaciones.addEventListener("input", validarOrganizaciones);
   if (fundamentacion) fundamentacion.addEventListener("input", validarFundamentacion);
 
@@ -965,13 +955,56 @@ document.addEventListener("DOMContentLoaded", function () {
   const indicators = Array.from(document.querySelectorAll(".wizard-step"));
   const nextButtons = document.querySelectorAll("[data-next-step]");
   const prevButtons = document.querySelectorAll("[data-prev-step]");
+  const wizardAlerta = document.getElementById("wizard-alerta");
   let currentStep = 1;
 
-  function obtenerPrimerErrorVisible() {
-    const errores = Array.from(document.querySelectorAll(".error-message, .error-message-declaracion"));
+  function obtenerPanelActivo() {
+    return panels.find(function (panel) {
+      return Number(panel.dataset.step) === currentStep;
+    });
+  }
+
+  function obtenerPrimerErrorVisible(scope) {
+    const raiz = scope || document;
+    const errores = Array.from(raiz.querySelectorAll(".error-message, .error-message-declaracion"));
     return errores.find(function (error) {
       return error.textContent.trim() !== "" && window.getComputedStyle(error).display !== "none";
     });
+  }
+
+  function contarErroresEnPanel(panel) {
+    if (!panel) return 0;
+    return Array.from(panel.querySelectorAll(".error-message, .error-message-declaracion")).filter(function (error) {
+      return error.textContent.trim() !== "" && window.getComputedStyle(error).display !== "none";
+    }).length;
+  }
+
+  function mostrarAlertaWizard(mensaje) {
+    if (!wizardAlerta) return;
+    wizardAlerta.textContent = mensaje;
+    wizardAlerta.hidden = false;
+  }
+
+  function ocultarAlertaWizard() {
+    if (!wizardAlerta) return;
+    wizardAlerta.textContent = "";
+    wizardAlerta.hidden = true;
+  }
+
+  function enfocarPrimerErrorEnPanel(panel) {
+    const primerError = obtenerPrimerErrorVisible(panel);
+    if (!primerError) return;
+
+    const contenedor = primerError.parentElement;
+    const campo = contenedor
+      ? contenedor.querySelector("input, select, textarea")
+      : null;
+
+    if (campo) {
+      campo.focus({ preventScroll: true });
+    }
+
+    primerError.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function actualizarUIWizard() {
@@ -1000,21 +1033,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (step === 2) {
+      return validarPaso2ParaAvanzar();
+    }
+
+    if (step === 3) {
       return (
-        validarDenominacion() &&
-        validarSublinea() &&
-        validarFechaInicioFin() &&
-        validarHora() &&
-        validarHoras() &&
-        validarHorasEnteras() &&
-        validarUnidadAcademica() &&
-        validarCamposTextoProyecto() &&
-        validarOrganizaciones() &&
-        validarFundamentacion() &&
-        validarObjetivos() &&
-        validarMetodologia() &&
-        validarMetas() &&
-        validarResultados()
+        validarRecursosHumanos() &&
+        validarProponente() &&
+        validarBeneficiarios() &&
+        validarLocalizacion() &&
+        validarPresupuesto() &&
+        validarCronograma()
       );
     }
 
@@ -1023,14 +1052,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   nextButtons.forEach(function (button) {
     button.addEventListener("click", function () {
+      const panelActivo = obtenerPanelActivo();
+
       if (!validarPasoActual(currentStep)) {
-        const primerError = obtenerPrimerErrorVisible();
-        if (primerError) {
-          primerError.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        const totalErrores = contarErroresEnPanel(panelActivo);
+
+        mostrarAlertaWizard(
+          totalErrores > 0
+            ? `Hay ${totalErrores} campo(s) pendiente(s) en esta etapa. Revise los mensajes en rojo.`
+            : "Complete todos los campos obligatorios de esta etapa antes de continuar."
+        );
+
+        enfocarPrimerErrorEnPanel(panelActivo);
         return;
       }
 
+      ocultarAlertaWizard();
       currentStep = Math.min(currentStep + 1, panels.length);
       actualizarUIWizard();
       if (form) form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1039,6 +1076,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   prevButtons.forEach(function (button) {
     button.addEventListener("click", function () {
+      ocultarAlertaWizard();
       currentStep = Math.max(currentStep - 1, 1);
       actualizarUIWizard();
       if (form) form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1064,7 +1102,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const esHorasValida = validarHoras();
       const esHorasEnterasValida = validarHorasEnteras();
       const esUnidadValida = validarUnidadAcademica();
-      const esTextoProyectoValido = validarCamposTextoProyecto();
+      const esTextoPaso2Valido = validarCamposTextoPaso2();
+      const esProponenteValido = validarProponente();
       const esOrganizacionValida = validarOrganizaciones();
       const esFundamentacionValida = validarFundamentacion();
       const esObjetivosValido = validarObjetivos();
@@ -1092,7 +1131,8 @@ document.addEventListener("DOMContentLoaded", function () {
         !esHorasValida ||
         !esHorasEnterasValida ||
         !esUnidadValida ||
-        !esTextoProyectoValido ||
+        !esTextoPaso2Valido ||
+        !esProponenteValido ||
         !esOrganizacionValida ||
         !esFundamentacionValida ||
         !esObjetivosValido ||
@@ -1121,8 +1161,93 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // =====================================================
-  // 18. INICIALIZACIÓN DEL FORMULARIO
+  // 18. PRECARGA (MODO EDICIÓN)
+  // =====================================================
+  function setValorCampo(nombre, valor) {
+    if (valor === undefined || valor === null || valor === "") return;
+    const campos = form.querySelectorAll('[name="' + nombre + '"]');
+    if (!campos.length) return;
+
+    campos.forEach(function (campo) {
+      if (campo.type === "radio") {
+        campo.checked = campo.value === valor;
+      } else {
+        campo.value = valor;
+      }
+    });
+  }
+
+  function aplicarInitialFormulario() {
+    const initialEl = document.getElementById("formulario-initial");
+    if (!initialEl || !initialEl.textContent) return;
+
+    let initial;
+    try {
+      initial = JSON.parse(initialEl.textContent);
+    } catch (err) {
+      return;
+    }
+
+    const camposSimples = [
+      "nombre_proponente", "apellido_proponente", "correo_proponente", "telefono_proponente",
+      "docente_responsable", "fecha_inicio", "fecha_fin", "hora", "horas", "carrera", "curso",
+      "organizaciones", "fundamentacion", "objetivos", "metodologia", "metas", "resultados",
+      "recursos_humanos", "proponente", "beneficiarios", "localizacion", "presupuesto",
+    ];
+    camposSimples.forEach(function (nombre) {
+      setValorCampo(nombre, initial[nombre]);
+    });
+
+    if (initial.estudiante_proponente) {
+      setValorCampo("estudiante_proponente", initial.estudiante_proponente);
+      toggleDocenteCampo();
+    }
+
+    if (initial.linea_id && denominacionSelect) {
+      denominacionSelect.value = String(initial.linea_id);
+      poblarSublineas();
+      if (initial.sublinea_id && sublineaSelect) {
+        sublineaSelect.value = String(initial.sublinea_id);
+      }
+    }
+
+    const idsUnidades = initial.unidad_academica_ids || [];
+    if (containerUnidades && idsUnidades.length) {
+      containerUnidades.innerHTML = "";
+      idsUnidades.forEach(function (idUnidad, index) {
+        const grupo = document.createElement("div");
+        grupo.className = "unidad-academica-group";
+        const label = document.createElement("label");
+        label.className = "form-label";
+        label.textContent = index === 0 ? "Unidad Académica:" : "Unidad Académica adicional:";
+        grupo.appendChild(label);
+        grupo.appendChild(crearSelectUnidad(String(idUnidad)));
+        containerUnidades.appendChild(grupo);
+      });
+      actualizarOpcionesEnTodosLosSelects();
+    }
+
+    const slotsCronograma = [
+      "cronograma_actividad_1", "cronograma_actividad_2", "cronograma_actividad_3",
+      "cronograma_actividad_4", "cronograma_actividad_5", "cronograma_actividad_6",
+      "cronograma_actividad_7",
+    ];
+    slotsCronograma.forEach(function (nombre) {
+      setValorCampo(nombre, initial[nombre]);
+    });
+    for (let s = 1; s <= 7; s += 1) {
+      setValorCampo("cronograma_inicio_" + s, initial["cronograma_inicio_" + s]);
+      setValorCampo("cronograma_dias_" + s, initial["cronograma_dias_" + s]);
+      setValorCampo("cronograma_hora_" + s, initial["cronograma_hora_" + s]);
+      setValorCampo("cronograma_fin_" + s, initial["cronograma_fin_" + s]);
+      setValorCampo("cronograma_credito_" + s, initial["cronograma_credito_" + s]);
+    }
+  }
+
+  // =====================================================
+  // 19. INICIALIZACIÓN DEL FORMULARIO
   // =====================================================
   toggleDocenteCampo();
+  aplicarInitialFormulario();
   actualizarUIWizard();
 });

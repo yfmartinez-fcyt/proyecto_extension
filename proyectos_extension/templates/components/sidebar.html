@@ -13,13 +13,18 @@
                 </a>
             </li>
 
+            {% if user.is_authenticated and user.rol == 'director_extension' %}
+            <li class="nav-item">
+                <a class="nav-link sidebar-link" href="{% url 'dashboard_director' %}">
+                    <i class="bi bi-shield-check me-2"></i>Portal Director
+                </a>
+            </li>
+            {% elif user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link sidebar-link" href="{% url 'nuevo_proyecto' %}">
                     <i class="bi bi-plus-circle me-2"></i>Nuevo Proyecto
                 </a>
             </li>
-
-            {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link sidebar-link" href="{% url 'mis_proyectos' %}">
                     <i class="bi bi-folder2-open me-2"></i>Mis Proyectos

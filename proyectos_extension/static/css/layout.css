@@ -1,9 +1,66 @@
-html, body {
+html {
     height: 100%;
 }
 
-body {
+body.app-body {
     background-color: #f8f9fa;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    min-height: 100dvh;
+    min-height: 100svh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar + contenido + pie: ocupa siempre el alto de la ventana */
+.page-shell {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100dvh;
+    min-height: 100svh;
+    width: 100%;
+}
+
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+}
+
+.app-page-container {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    max-width: 100%;
+}
+
+.app-navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.app-navbar-actions {
+    margin-left: auto;
+}
+
+.app-menu-btn {
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+}
+
+.custom-navbar,
+.director-navbar {
+    flex-shrink: 0;
 }
 
 .custom-navbar {
@@ -18,9 +75,20 @@ body {
 }
 
 .navbar-logo {
-    width: auto; 
+    width: auto;
     height: 75px;
     object-fit: contain;
+}
+
+.navbar-logo-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: #e8efff;
+    color: #163a8a;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
 }
 
 .navbar-brand {
@@ -68,6 +136,14 @@ body {
     object-fit: cover;
     border: 2px solid #dbe7ff;
     background: #fff;
+}
+
+.profile-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #163a8a;
+    font-size: 1.25rem;
 }
 
 .welcome-text span {
@@ -147,8 +223,37 @@ body {
 .main-content {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     min-width: 0;
+    width: 100%;
+}
+
+/* Encabezado de página (compartido entre módulos) */
+.page-header {
+    background: #ffffff;
+    border: 1px solid #e9edf3;
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #163a8a;
+    margin-bottom: 0.35rem;
+}
+
+.page-subtitle {
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+.app-content-page {
+    max-width: 1100px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .sidebar-link {
@@ -183,58 +288,171 @@ body {
     height: 42px;
 }
 
-.main-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
+/* 
+──────────────────────────────────────────────────────────────────
+   PIE DE PÁGINA
+   ──────────────────────────────────────────────────────────────────
+/* Caja exterior del pie de página */
 .custom-footer {
-    background: #f6f9ff;
-    border-top: 1px solid #e1e7f0;
-    padding: 0 0 18px 0;
-    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: auto;              /* empuja el pie al fondo de la ventana */
+    background: #f6f9ff;           /* ← color de fondo del pie */
+    border-top: 1px solid #e1e7f0; /* ← línea superior separadora */
+    padding: 0.65rem 0 max(0.65rem, env(safe-area-inset-bottom)); /* ← alto del pie */
+    text-align: center;
+}
+
+/* Centra la línea en el medio; en móvil permite scroll horizontal si no entra */
+.footer-container {
+    width: 100%;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    text-align: center;            /* ← centra .footer-line en la pantalla */
+}
+
+/* Línea única compacta: NO usar flex con gap aquí (separa los bloques) */
+.footer-line {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;           /* ← mantiene todo en una sola línea */
+    line-height: 1.35;             /* ← altura de la línea */
+    font-size: 0.875rem;           /* ← tamaño base de todo el pie */
     color: #444444;
-    font-family: "Montserrat SemiBold", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.custom-footer .container-fluid {
-    max-width: 1200px;
+.footer-line > span {
+    display: inline;
+    vertical-align: baseline;
 }
 
+/* Separador "|" entre secciones — margin: 0 para pegar más */
+.footer-sep {
+    color: #cbd5e1;                  /* ← color del separador */
+    user-select: none;
+    margin: 0 0.1rem;                /* ← espacio a los lados del "|" */
+}
+
+/* Texto "FCyT — UNCA" */
+.footer-institution {
+    font-size: 0.75rem;              /* ← tamaño del nombre institucional */
+    font-weight: 700;
+    letter-spacing: 0;               /* ← aumentar para más aire entre letras */
+    text-transform: uppercase;
+    color: #163a8a;                  /* ← color azul institucional */
+}
+
+/* Texto del copyright */
 .footer-copy {
-    color: #444444;
-    line-height: 1.7;
+    color: #4b5563;                  /* ← color del copyright */
 }
 
 .footer-copy strong {
-    font-weight: 700;
-    color: #222222;
+    font-weight: 600;
+    color: #1f2937;                  /* ← color del nombre del sistema en negrita */
 }
 
+/* Etiqueta "Desarrollado por" */
+.footer-team-label {
+    color: #6b7280;
+    font-size: 0.8125rem;
+    margin-left: 0.1rem;             /* ← espacio antes de "Desarrollado por" */
+}
+
+/* Contenedor de iniciales MD, YM, MV */
+.footer-dev-links {
+    display: inline;
+    margin-left: 0.1rem;             /* ← espacio entre "Desarrollado por" e iniciales */
+}
+
+/* Cada caja/link de inicial (LinkedIn) */
 .footer-dev-link {
-    display: inline-block;
-    padding: 4px 8px;
-    margin: 0 2px;
-    border-radius: 6px;
+    display: inline;
+    padding: 0 0.12rem;              /* ← tamaño interno de cada caja */
+    border: 1px solid #006fdd;       /* ← borde de la caja */
+    border-radius: 3px;
     text-decoration: none;
-    color: #006fdd;
-    font-size: 14px;
+    color: #006fdd;                  /* ← color del texto de las iniciales */
+    font-size: 0.8125rem;
     font-weight: 600;
-    background-color: transparent;
+    background-color: #ffffff;
+    line-height: 1.2;
     transition: all 0.2s ease;
 }
 
+/* Espacio entre cajas MD, YM y MV */
+.footer-dev-link + .footer-dev-link {
+    margin-left: 0.08rem;            /* ← distancia entre cada inicial */
+}
+
 .footer-dev-link:hover {
-    background-color: rgba(0, 111, 221, 0.08);
+    background-color: rgba(0, 111, 221, 0.08); /* ← fondo al pasar el mouse */
     color: #0056ad;
     text-decoration: none;
 }
 
 .footer-dev-link:focus {
     outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(0, 111, 221, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(0, 111, 221, 0.15); /* ← anillo al enfocar con teclado */
+}
+
+/* Botones táctiles (mín. ~44px recomendado en móvil) */
+.btn:not(.btn-close),
+.sidebar-link,
+.form-control:not([type="checkbox"]):not([type="radio"]),
+.form-select,
+.cronograma-input,
+.form-input:not([type="checkbox"]):not([type="radio"]) {
+    min-height: 44px;
+}
+
+.btn-sm:not(.btn-close) {
+    min-height: 40px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    min-height: auto;
+    width: auto;
+}
+
+textarea.form-control,
+textarea.form-textarea {
+    min-height: 5rem;
+}
+
+.app-messages .alert {
+    font-size: 0.92rem;
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .custom-navbar {
+        min-height: 64px;
+    }
+
+    .navbar-brand {
+        margin-left: 0;
+        max-width: calc(100% - 120px);
+    }
+
+    .brand-text {
+        display: none;
+    }
+
+    .btn-support {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .user-dropdown-btn {
+        padding: 0.35rem 0.5rem;
+    }
+
+    .welcome-text {
+        display: none !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -257,11 +475,12 @@ body {
         height: 38px;
     }
 
-    .custom-footer {
-        text-align: center;
+    .mobile-title {
+        font-size: 0.85rem;
+        line-height: 1.2;
     }
 
-    .footer-dev-link {
-        margin-top: 4px;
+    .offcanvas {
+        max-width: min(320px, 88vw);
     }
 }

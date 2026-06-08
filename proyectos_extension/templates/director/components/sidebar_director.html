@@ -1,0 +1,31 @@
+<div class="offcanvas offcanvas-start director-sidebar" tabindex="-1" id="directorSidebarCanvas">
+    <div class="offcanvas-header sidebar-header">
+        <h5 class="offcanvas-title mobile-title">Menú institucional</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body p-0">
+        <ul class="nav flex-column p-3 gap-2">
+            <li class="nav-item">
+                <a class="nav-link sidebar-link active" href="{% url 'dashboard_director' %}">
+                    <i class="bi bi-inbox-fill me-2"></i>Bandeja pendientes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link" href="{% url 'repositorio_proyectos' %}">
+                    <i class="bi bi-archive me-2"></i>Proyectos aprobados
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link" href="{% url 'lineas_accion' %}">
+                    <i class="bi bi-diagram-3 me-2"></i>Líneas de acción
+                </a>
+            </li>
+            <li class="nav-item mt-2">
+                <a class="nav-link sidebar-link text-danger" href="{% url 'logout' %}">
+                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

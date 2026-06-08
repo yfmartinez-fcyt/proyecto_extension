@@ -9,129 +9,88 @@
 
 {% block content %}
 
-<div class="main-content mt-5 pt-4">
+<div class="mp-page">
+    <header class="mp-header">
+        <h1 class="mp-title">Mis Proyectos</h1>
+        <p class="mp-subtitle">
+            Consulta el estado de tus proyectos y realiza acciones según corresponda.
+        </p>
+        <a href="{% url 'nuevo_proyecto' %}" class="btn btn-primary mp-btn-new">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            Nuevo proyecto
+        </a>
+    </header>
 
-    <div class="container">
-
-        <!-- HEADER -->
-        <div class="mp-header mb-4">
-            <h1 class="mp-title">Mis Proyectos</h1>
-            <p class="mp-subtitle">
-                Consulta el estado de tus proyectos y realiza acciones según corresponda.
-            </p>
-        </div>
-
-        <!-- CARD -->
-        <div class="card mp-card shadow-sm">
-
-            <div class="card-body">
-
-                <h5 class="card-title mb-3">Listado de Proyectos</h5>
-
-                <div class="table-responsive">
-
-                    <table class="table align-middle mp-table">
-
-                        <thead class="table-light">
-                            <tr>
-                                <th>Proyecto</th>
-                                <th>Estado</th>
-                                <th>Fecha</th>
-                                <th>Comentarios</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {% for p in proyectos %}
-                            <tr>
-
-                                <td class="fw-semibold">
-                                    {{ p.titulo }}
-                                </td>
-
-                                <td>
-                                    {% if p.estado == 'pendiente' %}
-                                        <span class="badge mp-badge mp-pendiente">Pendiente</span>
-
-                                    {% elif p.estado == 'aprobado' %}
-                                        <span class="badge mp-badge mp-aprobado">Aprobado</span>
-
-                                    {% elif p.estado == 'sugerencias' %}
-                                        <span class="badge mp-badge mp-sugerencias">Sugerencias</span>
-
-                                    {% elif p.estado == 'borrador' %}
-                                        <span class="badge mp-badge mp-borrador">Borrador</span>
-
-                                    {% elif p.estado == 'rechazado' %}
-                                        <span class="badge mp-badge mp-rechazado">Rechazado</span>
-                                    {% endif %}
-                                </td>
-
-                                <td class="text-muted">
-                                    {{ p.fecha }}
-                                </td>
-
-                                <td>
-                                    {% if p.comentario %}
-                                        <small class="text-muted">
-                                            {{ p.comentario }}
-                                        </small>
-                                    {% else %}
-                                        <span class="text-muted">—</span>
-                                    {% endif %}
-                                </td>
-
-                                <td>
-
-                                    {% if p.estado == 'aprobado' %}
-
-                                        <a href="{% url 'presentar_informe' %}"
-                                        class="btn btn-sm mp-btn-primary">
-                                            Presentar Informe
-                                        </a>
-
-                                    {% elif p.estado == 'pendiente' or p.estado == 'borrador' or p.estado == 'sugerencias' %}
-
-                                        <!-- EDITAR -->
-                                        <a href="#"
-                                        class="btn btn-sm btn-outline-primary me-1">
-                                            Editar
-                                        </a>
-
-                                        <!-- ELIMINAR -->
-                                        <a href="#"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('¿Seguro que deseas eliminar este proyecto?')">
-                                            Eliminar
-                                        </a>
-
-                                    {% elif p.estado == 'rechazado' %}
-
-                                        <span class="text-muted small">
-                                            Sin acciones disponibles
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                            </tr>
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
+    {% if proyectos %}
+    <ul class="mp-list" role="list">
+        {% for p in proyectos %}
+        <li class="mp-card">
+            <div class="mp-card__top">
+                <h2 class="mp-card__title">{{ p.titulo }}</h2>
+                {% if p.estado == 'pendiente' %}
+                    <span class="mp-badge mp-pendiente">Pendiente</span>
+                {% elif p.estado == 'aprobado' %}
+                    <span class="mp-badge mp-aprobado">Aprobado</span>
+                {% elif p.estado == 'sugerencias' %}
+                    <span class="mp-badge mp-sugerencias">Sugerencias</span>
+                {% elif p.estado == 'borrador' %}
+                    <span class="mp-badge mp-borrador">Borrador</span>
+                {% elif p.estado == 'rechazado' %}
+                    <span class="mp-badge mp-rechazado">Rechazado</span>
+                {% endif %}
             </div>
 
+            {% if p.fecha %}
+            <p class="mp-card__meta">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                Inicio: {{ p.fecha }}
+            </p>
+            {% endif %}
+
+            {% if p.comentario_director %}
+            <p class="mp-card__meta mp-card__feedback">
+                <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+                <strong>Dictamen del director:</strong> {{ p.comentario_director }}
+            </p>
+            {% endif %}
+
+            <div class="mp-card__actions">
+                {% if p.estado == 'aprobado' %}
+                    <a href="{% url 'presentar_informe' %}" class="btn btn-sm mp-btn-primary w-100 w-sm-auto">
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                        Presentar informe
+                    </a>
+                {% elif p.puede_editar %}
+                    <a href="{% url 'editar_proyecto' p.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                        Editar
+                    </a>
+                    <form method="post"
+                          action="{% url 'eliminar_proyecto' p.id %}"
+                          class="mp-form-delete"
+                          onsubmit="return confirm('¿Eliminar este proyecto? Esta acción no se puede deshacer.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash" aria-hidden="true"></i>
+                            Eliminar
+                        </button>
+                    </form>
+                {% elif p.estado == 'rechazado' %}
+                    <span class="text-muted small">Sin acciones disponibles</span>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="mp-empty card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-folder2-open mp-empty__icon" aria-hidden="true"></i>
+            <p class="mb-3 text-muted">Aún no tiene proyectos registrados.</p>
+            <a href="{% url 'nuevo_proyecto' %}" class="btn btn-primary">Crear primer proyecto</a>
         </div>
-
     </div>
-
+    {% endif %}
 </div>
 
 {% endblock %}

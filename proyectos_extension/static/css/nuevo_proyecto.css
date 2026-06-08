@@ -65,7 +65,9 @@ body.body-bg {
 }
 
 .hero-section {
-  max-width: 760px;
+    max-width: 1000px;
+
+
   margin: 0 auto;
   padding: 2rem 1rem 1rem;
   text-align: center;
@@ -100,7 +102,9 @@ body.body-bg {
 }
 
 .wizard-shell {
-  max-width: 760px;
+    max-width: 1000px;
+
+
   margin: 0 auto;
 }
 
@@ -212,7 +216,9 @@ body.body-bg {
 .main-proponente,
 .main-proyecto {
   background-color: #ffffff;
-  max-width: 760px;
+    max-width: 1000px;
+
+
   margin: 0 auto 0.9rem auto;
   border-radius: 0.75rem;
   padding: 1.35rem;
@@ -269,13 +275,14 @@ body.body-bg {
   line-height: 1.4;
 }
 
+/* CAMPOS DE TEXTO */
 .form-input,
 .form-textarea,
 select.form-input {
   width: 100%;
-  padding: 0.95rem 1rem;
-  border: 1px solid #d7dce5;
-  border-radius: 0.55rem;
+  padding: 0.95rem 1rem; /* aquí se agrandan los campos */
+  border: 1px solid #e5d7d7; /* aquí se agrandan los bordes de los campos de texto */
+  border-radius: 0.55rem; /* aquí se redondean más las esquinas */
   background-color: #fff;
   font-size: 0.9rem;
   font-family: inherit;
@@ -292,7 +299,7 @@ select.form-input:focus {
 }
 
 .form-textarea {
-  min-height: 100px;
+  min-height: 100px; /* aquí se agranda la altura del campo de texto */
   resize: vertical;
   line-height: 1.55;
 }
@@ -323,6 +330,27 @@ input[type="checkbox"] {
   font-size: 0.82rem;
   margin-top: 0.45rem;
   min-height: 18px;
+}
+
+.wizard-alerta {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #f5c2c7;
+  background: #fff5f5;
+  color: #842029;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.wizard-alerta[hidden] {
+  display: none !important;
+}
+
+.form-input.is-invalid,
+.form-textarea.is-invalid,
+.unidad-academica-select.is-invalid {
+  border-color: #ba1a1a !important;
 }
 
 #docente-responsable-campo {
@@ -356,40 +384,65 @@ input[type="checkbox"] {
   border-color: #1d4ed8;
 }
 
+.edit-mode-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(29, 78, 216, 0.12);
+  color: #1d4ed8;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+  /* ── Cronograma ───────────────────────────────────────────────────
+    HTML : templates/proyectos/nuevo_proyecto.html
+    Columnas / filas     → mismo HTML (7 actividades fijas)
+    Ancho de columnas    → .cronograma-table th/td:nth-child(n)
+    Inputs compactos     → .cronograma-table .cronograma-input
+    Scroll horizontal    → .cronograma-wrap (pantallas estrechas)
+    Tarjetas en móvil    → @media (max-width: 1024px)
+
+    CÓMO AGRANDAR:
+    · Bordes de la tabla/celdas  → .cronograma-wrap, thead th, tbody td (border)
+    · Bordes de cada campo       → .cronograma-input (border)
+    · Tamaño de cada campo       → .cronograma-input (min-height, padding, font-size)
+    · Espacio entre campos       → tbody td (padding)
+    ─────────────────────────────────────────────────────────────── */
+
 .cronograma-label {
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 
 .cronograma-wrap {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  border: 1px solid #cfd5df;
-  border-radius: 1rem;
+  border: 1px solid #e9edf3; /* aquí se agranda el borde exterior de la tabla */
+  border-radius: 12px;
   background: #fff;
-  padding: 0;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .cronograma-table {
   width: 100%;
-  min-width: 1180px;
+  min-width: 880px;
   border-collapse: collapse;
+  table-layout: fixed;
   background: #fff;
 }
 
 .cronograma-table thead th {
-  background: #f8f9fc;
-  color: #667085;
-  font-size: 0.72rem;
+  background: #f5f8ff;
+  color: #163a8a;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  font-weight: 800;
-  padding: 1rem 0.8rem;
-  border-right: 1px solid #cfd5df;
-  border-bottom: 1px solid #cfd5df;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 0.75rem 0.55rem; /* aquí se agranda el espacio de los encabezados */
+  border-right: 1px solid #e9edf3; /* aquí se agrandan los bordes entre columnas */
+  border-bottom: 1px solid #e9edf3; /* aquí se agranda el borde bajo el encabezado */
   text-align: left;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .cronograma-table thead th:last-child {
@@ -397,10 +450,10 @@ input[type="checkbox"] {
 }
 
 .cronograma-table tbody td {
-  padding: 0.65rem;
-  border-right: 1px solid #cfd5df;
-  border-bottom: 1px solid #cfd5df;
-  vertical-align: top;
+  padding: 0.45rem; /* aquí se agranda el espacio alrededor de cada campo */
+  border-right: 1px solid #e9edf3; /* aquí se agrandan los bordes entre columnas */
+  border-bottom: 1px solid #e9edf3; /* aquí se agrandan los bordes entre filas */
+  vertical-align: middle;
   background: #fff;
 }
 
@@ -412,48 +465,59 @@ input[type="checkbox"] {
   border-right: none;
 }
 
+.cronograma-table tbody tr:nth-child(even) td {
+  background: #fafbff;
+}
+
+/* Anchos de columnas (suman 100%) */
 .cronograma-table th:nth-child(1),
 .cronograma-table td:nth-child(1) {
-  min-width: 290px;
+  width: 32%;
 }
 
 .cronograma-table th:nth-child(2),
 .cronograma-table td:nth-child(2),
 .cronograma-table th:nth-child(5),
 .cronograma-table td:nth-child(5) {
-  min-width: 170px;
+  width: 14%;
 }
 
 .cronograma-table th:nth-child(3),
 .cronograma-table td:nth-child(3) {
-  min-width: 95px;
+  width: 8%;
 }
 
 .cronograma-table th:nth-child(4),
 .cronograma-table td:nth-child(4) {
-  min-width: 120px;
+  width: 10%;
 }
 
 .cronograma-table th:nth-child(6),
 .cronograma-table td:nth-child(6) {
-  min-width: 130px;
+  width: 10%;
 }
 
 .cronograma-input {
   width: 100%;
-  padding: 0.9rem 0.95rem;
-  border: 1px solid #d7dce5;
-  border-radius: 0.9rem;
-  background: #fbfbfc;
+  min-width: 0;
+  min-height: 2.35rem; /* aquí se agranda la altura del campo */
+  padding: 0.45rem 0.55rem; /* aquí se agranda el espacio interno del campo */
+  border: 1px solid #dbe2ea; /* aquí se agrandan los bordes del campo */
+  border-radius: 8px;
+  background: #fff;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.875rem; /* aquí se agranda el texto del campo */
   color: #111827;
+}
+
+.cronograma-table .cronograma-input {
+  min-height: 2.35rem; /* aquí se fuerza la altura mínima en la tabla */
 }
 
 .cronograma-input:focus {
   outline: none;
-  border-color: #1d4ed8;
-  box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.1);
+  border-color: #163a8a;
+  box-shadow: 0 0 0 3px rgba(22, 58, 138, 0.12);
   background: #fff;
 }
 
@@ -567,9 +631,116 @@ input[type="checkbox"] {
   background: #dfeaff;
 }
 
+/* Cronograma: tarjetas apiladas en tablet/móvil */
+@media (max-width: 1024px) {
+  .cronograma-wrap {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    overflow-x: visible;
+  }
+
+  .cronograma-table {
+    min-width: 0;
+    table-layout: auto;
+  }
+
+  .cronograma-table thead {
+    display: none;
+  }
+
+  .cronograma-table tbody tr.cronograma-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    margin-bottom: 1rem;
+    border: 1px solid #e9edf3;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+
+  .cronograma-table tbody tr.cronograma-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .cronograma-table tbody td {
+    display: block;
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid #eef2f7;
+    padding: 0.75rem 0.85rem;
+    min-width: 0;
+    background: #fff;
+  }
+
+  .cronograma-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .cronograma-table tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #163a8a;
+    margin-bottom: 0.35rem;
+  }
+
+  .cronograma-table tbody td[data-label="Actividad / Tarea"] {
+    grid-column: 1 / -1;
+  }
+
+  .cronograma-table tbody td[data-label="Fecha de inicio"] {
+    grid-column: 1 / 4;
+  }
+
+  .cronograma-table tbody td[data-label="Fecha de finalización"] {
+    grid-column: 4 / -1;
+  }
+
+  .cronograma-table tbody td[data-label="Días"] {
+    grid-column: 1 / 3;
+  }
+
+  .cronograma-table tbody td[data-label="Hora"] {
+    grid-column: 3 / 5;
+  }
+
+  .cronograma-table tbody td[data-label="Horas / crédito"] {
+    grid-column: 5 / -1;
+  }
+
+  .cronograma-table .cronograma-input {
+    font-size: 1rem; /* aquí se agranda el texto en móvil/tablet */
+    min-height: 2.75rem; /* aquí se agranda la altura en móvil/tablet */
+  }
+}
+
 @media (max-width: 900px) {
+  .wizard-header {
+    padding: 1rem 0.75rem;
+    text-align: left;
+  }
+
   .wizard-steps {
-    gap: 1.2rem;
+    justify-content: flex-start;
+    gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0.35rem;
+    margin: 0 -0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .wizard-step {
+    scroll-snap-align: start;
+    flex-shrink: 0;
   }
 
   .wizard-step:not(:last-child)::after {
@@ -607,6 +778,66 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 640px) {
+  .hero-section {
+    padding: 1.25rem 0.75rem 0.75rem;
+  }
+
+  .hero-title {
+    font-size: 1.35rem;
+  }
+
+  .form-wrapper {
+    padding: 0 0.5rem 1.5rem;
+  }
+
+  .wizard-shell {
+    max-width: 100%;
+  }
+
+  .main-proponente,
+  .main-proyecto {
+    padding: 1rem 0.85rem;
+    border-radius: 0.65rem;
+  }
+
+  .wizard-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .wizard-actions .wizard-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .submit-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .submit-actions .wizard-btn,
+  .submit-actions .submit-button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .declaration-box {
+    align-items: flex-start;
+  }
+
+  .cronograma-table tbody tr.cronograma-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cronograma-table tbody td[data-label="Actividad / Tarea"],
+  .cronograma-table tbody td[data-label="Fecha de inicio"],
+  .cronograma-table tbody td[data-label="Fecha de finalización"],
+  .cronograma-table tbody td[data-label="Días"],
+  .cronograma-table tbody td[data-label="Hora"],
+  .cronograma-table tbody td[data-label="Horas / crédito"] {
+    grid-column: 1 / -1;
+  }
+
   .header-container {
     flex-direction: column;
     align-items: flex-start;

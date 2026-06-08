@@ -1,0 +1,300 @@
+/* Portal Director de Extensión — misma paleta que el resto del sistema (layout.css) */
+
+:root {
+  --dir-primary: #163a8a;
+  --dir-primary-dark: #0f2f6b;
+  --dir-accent: #006fdd;
+  --dir-bg: #f8f9fa;
+  --dir-card: #ffffff;
+  --dir-border: #e9edf3;
+  --dir-muted: #6b7280;
+  --dir-light: #eef4ff;
+  --dir-light-bg: #e8efff;
+}
+
+body.director-portal {
+  background: var(--dir-bg);
+}
+
+/* Navbar: igual estilo que .custom-navbar del portal principal */
+.director-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--dir-border);
+  min-height: 78px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.director-navbar .system-name {
+  color: var(--dir-primary);
+  font-weight: 700;
+}
+
+.director-navbar .system-subtitle {
+  color: var(--dir-muted);
+}
+
+.director-navbar .navbar-logo-icon {
+  background: var(--dir-light-bg);
+  color: var(--dir-primary);
+}
+
+.director-navbar .profile-avatar {
+  border: 2px solid #dbe7ff;
+}
+
+.director-navbar .user-dropdown-btn {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  color: #1f2937 !important;
+}
+
+.director-navbar .user-dropdown-btn:hover,
+.director-navbar .user-dropdown-btn:focus {
+  background: var(--dir-light);
+  border-color: #cdddfc;
+}
+
+.director-sidebar .offcanvas-header {
+  background: #f8fafc;
+  color: var(--dir-primary);
+  border-bottom: 1px solid var(--dir-border);
+}
+
+.director-sidebar .sidebar-link {
+  color: #374151;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.director-sidebar .sidebar-link:hover {
+  background-color: var(--dir-light);
+  color: var(--dir-primary);
+}
+
+.director-sidebar .sidebar-link.active {
+  background-color: var(--dir-primary);
+  color: #ffffff;
+}
+
+.director-badge-role {
+  background: var(--dir-light);
+  color: var(--dir-primary);
+  border: 1px solid #cdddfc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+}
+
+.dir-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.dir-hero {
+  background: var(--dir-card);
+  border: 1px solid var(--dir-border);
+  border-left: 5px solid var(--dir-primary);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+.dir-hero h1 {
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-weight: 700;
+  color: var(--dir-primary);
+  margin-bottom: 0.35rem;
+}
+
+.dir-hero p {
+  color: var(--dir-muted);
+  margin: 0;
+}
+
+.dir-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--dir-light);
+  color: var(--dir-primary);
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.dir-table-wrap {
+  background: var(--dir-card);
+  border: 1px solid var(--dir-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+.dir-table {
+  margin: 0;
+}
+
+.dir-table thead {
+  background: var(--dir-primary);
+  color: #fff;
+}
+
+.dir-table thead th {
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  padding: 0.85rem 1rem;
+}
+
+.dir-table tbody td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  border-color: var(--dir-border);
+}
+
+.dir-btn-review {
+  background: var(--dir-primary);
+  border-color: var(--dir-primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  min-height: 40px;
+}
+
+.dir-btn-review:hover {
+  background: var(--dir-primary-dark);
+  border-color: var(--dir-primary-dark);
+  color: #fff;
+}
+
+.dir-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--dir-muted);
+}
+
+.dir-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.dir-detail-title {
+  color: var(--dir-primary);
+}
+
+.dir-section {
+  background: var(--dir-card);
+  border: 1px solid var(--dir-border);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.dir-section h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dir-primary);
+  margin-bottom: 0.75rem;
+}
+
+.dir-field {
+  margin-bottom: 0.65rem;
+}
+
+.dir-field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--dir-muted);
+  margin-bottom: 0.15rem;
+}
+
+.dir-field-value {
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dir-actions-panel {
+  background: linear-gradient(180deg, #fff 0%, #f5f8ff 100%);
+  border: 2px solid var(--dir-primary);
+  border-radius: 16px;
+  padding: 1.25rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.dir-actions-panel h2 {
+  font-size: 1.05rem;
+  color: var(--dir-primary);
+  margin-bottom: 1rem;
+}
+
+.dir-action-btn {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+  min-height: 44px;
+}
+
+.dir-btn-aprobar {
+  background: var(--dir-primary);
+  border-color: var(--dir-primary);
+  color: #fff;
+}
+
+.dir-btn-aprobar:hover {
+  background: var(--dir-primary-dark);
+  border-color: var(--dir-primary-dark);
+  color: #fff;
+}
+
+.dir-btn-observar {
+  background: #e9c46a;
+  border-color: #e9c46a;
+  color: #1f2937;
+}
+
+.dir-btn-rechazar {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.dir-historial-item {
+  border-left: 3px solid var(--dir-accent);
+  padding-left: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.dir-historial-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Tabla de cronograma en detalle de revisión (solo lectura) */
+.dir-cronograma-table {
+  margin: 0;
+}
+
+.dir-cronograma-table thead th:first-child {
+  min-width: 12rem;
+}
+
+@media (max-width: 991px) {
+  .dir-actions-panel {
+    position: static;
+    margin-top: 1rem;
+  }
+}

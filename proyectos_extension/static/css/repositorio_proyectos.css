@@ -104,3 +104,45 @@
     font-size: 0.9rem;
     color: #9ca3af;
 }
+
+@media (max-width: 768px) {
+    .repositorio-page {
+        padding: 0;
+    }
+
+    .page-header {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .content-card {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .search-section .col-md-4 {
+        flex-direction: column;
+    }
+
+    .search-section .btn {
+        width: 100%;
+    }
+
+    .project-card {
+        padding: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .project-title {
+        font-size: 1rem;
+    }
+}

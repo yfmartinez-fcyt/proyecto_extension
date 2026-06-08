@@ -119,6 +119,10 @@
 
 /* CONTACT SECTION */
 
+.contact-section {
+    margin-bottom: 0;
+}
+
 .contact-card {
     padding: 2rem;
 }

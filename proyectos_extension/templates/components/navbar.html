@@ -1,9 +1,9 @@
 {% load static %}
 
 <nav class="navbar custom-navbar sticky-top">
-    <div class="container-fluid px-4">
+    <div class="container-fluid app-navbar-inner">
 
-        <button class="btn btn-outline-primary me-3"
+        <button class="btn btn-outline-primary app-menu-btn"
                 type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#sidebarCanvas">
@@ -11,10 +11,9 @@
         </button>
 
         <a class="navbar-brand d-flex align-items-center gap-3" href="{% url 'inicio' %}">
-            <!-- LOGO (solo escritorio) -->
-            <img src="{% static 'assets/logofcytunca.png' %}" 
-                alt="Logo institucional" 
-                class="navbar-logo d-none d-md-block">
+            <span class="navbar-logo-icon d-none d-md-inline-flex" aria-hidden="true">
+                <i class="bi bi-mortarboard-fill"></i>
+            </span>
 
             <!-- TEXTO (solo móvil) -->
             <span class="mobile-title d-md-none">
@@ -31,7 +30,7 @@
         </a>
 
 
-            <div class="d-flex align-items-center gap-2 gap-md-3 flex-wrap mt-3 mt-lg-0">
+            <div class="d-flex align-items-center gap-2 gap-md-3 app-navbar-actions">
 
                 <a href="{% url 'soporte_tecnico' %}" class="btn btn-outline-secondary btn-support d-none d-lg-inline-flex">
                     <i class="bi bi-headset me-1"></i> Soporte Técnico
@@ -52,7 +51,9 @@
                             {% if user.foto %}
                                 <img src="{{ user.foto.url }}" alt="Foto de perfil" class="profile-avatar">
                             {% else %}
-                                <img src="{% static 'assets/default_avatar.png' %}" alt="Foto de perfil" class="profile-avatar">
+                                <span class="profile-avatar profile-avatar-fallback" aria-hidden="true">
+                                    <i class="bi bi-person-fill"></i>
+                                </span>
                             {% endif %}
 
                             <div class="welcome-text text-start d-none d-md-block">
@@ -75,11 +76,19 @@
                                 </a>
                             </li>
 
+                            {% if user.rol == 'director_extension' %}
+                            <li>
+                                <a class="dropdown-item rounded-3" href="{% url 'dashboard_director' %}">
+                                    <i class="bi bi-shield-check me-2"></i>Portal Director
+                                </a>
+                            </li>
+                            {% else %}
                             <li>
                                 <a class="dropdown-item rounded-3" href="{% url 'mis_proyectos' %}">
                                     <i class="bi bi-folder2-open me-2"></i>Mis proyectos
                                 </a>
                             </li>
+                            {% endif %}
 
                             <li><hr class="dropdown-divider"></li>
 

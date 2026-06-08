@@ -1,0 +1,82 @@
+{% extends 'director/base_director.html' %}
+
+{% block title %}Bandeja de revisión — Director de Extensión{% endblock %}
+
+{% block content %}
+<div class="dir-page">
+
+    <header class="dir-hero">
+        <h1><i class="bi bi-inbox-fill me-2"></i>Bandeja de revisión</h1>
+        <p>
+            Propuestas enviadas por proponentes (alumnos y docentes) pendientes de su dictamen institucional.
+        </p>
+        <span class="dir-stat">
+            <i class="bi bi-hourglass-split"></i>
+            {{ total_pendientes }} pendiente{{ total_pendientes|pluralize }}
+        </span>
+    </header>
+
+    <div class="dir-table-wrap">
+        {% if proyectos %}
+        <div class="table-responsive">
+            <table class="table dir-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Proyecto</th>
+                        <th>Proponente</th>
+                        <th>Línea / sublínea</th>
+                        <th>Enviado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in proyectos %}
+                    <tr>
+                        <td>
+                            <strong>{{ p.denominacion|default:"Sin título" }}</strong>
+                            {% if p.carrera_texto %}
+                            <br><small class="text-muted">{{ p.carrera_texto }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if p.proponente %}
+                                {{ p.proponente.nombre }} {{ p.proponente.apellido }}
+                                <br><small class="text-muted">{{ p.proponente.correo }}</small>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if p.sublinea and p.sublinea.linea_accion %}
+                                <small>{{ p.sublinea.linea_accion.linea }}</small><br>
+                            {% endif %}
+                            {{ p.sublinea.sublinea|default:"—" }}
+                        </td>
+                        <td>
+                            {% if p.actualizado_en %}
+                                {{ p.actualizado_en|date:"d/m/Y H:i" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'director_revision_detalle' p.idProyecto %}"
+                               class="btn btn-sm dir-btn-review">
+                                <i class="bi bi-clipboard-check me-1"></i>Revisar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="dir-empty">
+            <i class="bi bi-check2-circle display-4 text-success mb-3 d-block"></i>
+            <p class="mb-0">No hay proyectos pendientes de revisión en este momento.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

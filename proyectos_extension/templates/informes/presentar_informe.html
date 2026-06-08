@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Mi perfil{% endblock %}
+{% block title %}Presentar informe{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <h1 class="mb-3">Mi perfil</h1>
+    <h1 class="mb-3">Presentar informe</h1>
 
-    <p>Estás en la página de Mi perfil</p>
+    <p class="text-muted">
+        Esta sección permitirá adjuntar y enviar informes de avance o cierre
+        vinculados a proyectos aprobados.
+    </p>
 
-    {% if user.is_authenticated %}
-        <p>Estás logueado como: <strong>{{ user.first_name }}</strong></p>
-        <p>Rol: {{ user.rol }}</p>
-    {% else %}
-        <p>No has iniciado sesión.</p>
-    {% endif %} 
+    <div class="alert alert-info mb-0" role="status">
+        Módulo en desarrollo. Se habilitará junto con el modelo de informes en la base de datos.
+    </div>
 </div>
 {% endblock %}

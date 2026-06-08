@@ -1,90 +1,160 @@
-/* HEADER */
+.mp-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
 .mp-header {
-    margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .mp-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #163a8a;
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  font-weight: 700;
+  color: #163a8a;
+  margin-bottom: 0.35rem;
 }
 
 .mp-subtitle {
-    color: #6b7280;
-    font-size: 0.95rem;
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
 }
 
-/* CARD */
+.mp-btn-new {
+  border-radius: 12px;
+  font-weight: 600;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
 .mp-card {
-    border-radius: 16px;
-    border: 1px solid #e9edf5;
+  background: #fff;
+  border: 1px solid #e9edf5;
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
-/* TABLE */
-.mp-table th {
-    font-weight: 600;
-    color: #374151;
+.mp-card__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-.mp-table td {
-    vertical-align: middle;
+.mp-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
 }
 
-/* BADGES */
+.mp-card__meta {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mp-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.mp-form-delete {
+  margin: 0;
+  display: inline;
+}
+
 .mp-badge {
-    padding: 0.4rem 0.7rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .mp-aprobado {
-    background-color: #d1fae5;
-    color: #065f46;
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .mp-pendiente {
-    background-color: #fef3c7;
-    color: #92400e;
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .mp-sugerencias {
-    background-color: #dbeafe;
-    color: #1e3a8a;
+  background-color: #dbeafe;
+  color: #1e3a8a;
 }
 
 .mp-borrador {
-    background-color: #e5e7eb;
-    color: #374151;
+  background-color: #e5e7eb;
+  color: #374151;
 }
 
 .mp-rechazado {
-    background-color: #fee2e2;
-    color: #991b1b;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
-/* BOTÓN */
 .mp-btn-primary {
-    background-color: #163a8a;
-    color: white;
-    border-radius: 10px;
-    padding: 0.35rem 0.7rem;
-    font-size: 0.75rem;
-    border: none;
-    transition: all 0.2s ease;
+  background-color: #163a8a;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  min-height: 44px;
 }
 
 .mp-btn-primary:hover {
-    background-color: #122e6b;
-    color: white;
+  background-color: #122e6b;
+  color: white;
 }
 
-.btn-outline-primary {
-    border-radius: 10px;
-    font-size: 0.75rem;
+.mp-card__actions .btn {
+  min-height: 44px;
+  border-radius: 10px;
+  font-weight: 600;
+  flex: 1 1 auto;
 }
 
-.btn-outline-danger {
-    border-radius: 10px;
-    font-size: 0.75rem;
+@media (min-width: 400px) {
+  .mp-card__actions .btn {
+    flex: 0 1 auto;
+  }
+}
+
+.mp-empty {
+  border-radius: 16px;
+  border: 1px solid #e9edf5;
+}
+
+.mp-empty__icon {
+  font-size: 2.5rem;
+  color: #9ca3af;
+  display: block;
+  margin-bottom: 0.75rem;
 }
