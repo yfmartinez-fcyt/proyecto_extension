@@ -1,152 +1,210 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.http import Http404
-import random
+from django.shortcuts import redirect, render
+from django.views.decorators.http import require_POST
+
+from apps.core.catalog import obtener_catalogo_formulario
+from apps.proyectos.constants import EstadoProyecto
+from apps.proyectos.models import Proyecto
+from apps.proyectos.decorators import solo_proponente
+from apps.proyectos.director_services import ultima_revision_proyecto
+from apps.proyectos.services import (
+    ErrorGuardadoProyecto,
+    eliminar_proyecto_de_usuario,
+    guardar_proyecto_desde_formulario,
+    obtener_initial_formulario,
+    obtener_proyecto_editable,
+)
 
 
-# 🟢 PROYECTOS APROBADOS (CON BUSCADOR)
+def _contexto_formulario_proyecto(proyecto=None):
+    catalogo = obtener_catalogo_formulario()
+    ctx = {
+        "catalogo": catalogo,
+        "lineas": catalogo["lineas"],
+        "unidades_academicas": catalogo["unidades"],
+        "modo": "editar" if proyecto else "crear",
+        "proyecto_id": proyecto.idProyecto if proyecto else None,
+        "initial": obtener_initial_formulario(proyecto) if proyecto else {},
+    }
+    if proyecto:
+        ctx["estado_proyecto"] = proyecto.estado
+        ctx["titulo_hero"] = "Editar proyecto"
+        ctx["subtitulo_hero"] = (
+            "Actualice su propuesta y guarde los cambios o reenvíela para revisión."
+        )
+    else:
+        ctx["titulo_hero"] = "Formulario de Programa, Proyecto o Actividad"
+        ctx["subtitulo_hero"] = (
+            "Complete este formulario con la información requerida para la evaluación "
+            "de su propuesta académica."
+        )
+    return ctx
+
+
+def _procesar_guardado_formulario(request, proyecto_id=None):
+    accion = request.POST.get("accion", EstadoProyecto.BORRADOR)
+    if proyecto_id is None:
+        proyecto_id = request.POST.get("proyecto_id") or None
+        if proyecto_id:
+            try:
+                proyecto_id = int(proyecto_id)
+            except (TypeError, ValueError):
+                proyecto_id = None
+
+    try:
+        _, estado = guardar_proyecto_desde_formulario(
+            request.POST, request.user, accion, proyecto_id=proyecto_id
+        )
+    except ErrorGuardadoProyecto as exc:
+        messages.error(request, str(exc))
+        proyecto = obtener_proyecto_editable(proyecto_id, request.user) if proyecto_id else None
+        return render(
+            request,
+            "proyectos/nuevo_proyecto.html",
+            _contexto_formulario_proyecto(proyecto),
+        )
+    except Exception:
+        messages.error(
+            request,
+            "No se pudo guardar el proyecto. Verifique los datos e intente nuevamente.",
+        )
+        proyecto = obtener_proyecto_editable(proyecto_id, request.user) if proyecto_id else None
+        return render(
+            request,
+            "proyectos/nuevo_proyecto.html",
+            _contexto_formulario_proyecto(proyecto),
+        )
+
+    if proyecto_id:
+        if estado == EstadoProyecto.PENDIENTE:
+            messages.success(request, "Proyecto actualizado y reenviado para revisión.")
+        else:
+            messages.success(request, "Cambios guardados correctamente.")
+    elif estado == EstadoProyecto.PENDIENTE:
+        messages.success(request, "Proyecto enviado para revisión.")
+    else:
+        messages.success(request, "Borrador guardado correctamente.")
+
+    return redirect("mis_proyectos")
+
+
 def proyectos_aprobados(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get("q", "").strip()
+    proyectos_qs = Proyecto.objects.filter(estado=EstadoProyecto.APROBADO).select_related(
+        "sublinea", "proponente"
+    )
 
     proyectos = [
         {
-            "id": 1,
-            "titulo": "Sistema de Gestión Educativa",
-            "fecha": "15/03/2026",
-            "resumen": "Plataforma para administrar cursos y estudiantes."
-        },
-        {
-            "id": 2,
-            "titulo": "App de Salud Comunitaria",
-            "fecha": "02/04/2026",
-            "resumen": "Aplicación para monitoreo de pacientes rurales."
-        },
-        {
-            "id": 3,
-            "titulo": "Portal de Extensión Universitaria",
-            "fecha": "10/04/2026",
-            "resumen": "Sistema web para gestión de proyectos."
+            "id": p.id,
+            "titulo": p.denominacion,
+            "fecha": p.fecha_inicio.strftime("%d/%m/%Y") if p.fecha_inicio else "",
+            "resumen": (p.fundamentacion or "")[:160],
         }
+        for p in proyectos_qs
     ]
 
-    # 🔎 FILTRO POR NOMBRE O FECHA
     if query:
         query_lower = query.lower()
         proyectos = [
-            p for p in proyectos
+            p
+            for p in proyectos
             if query_lower in p["titulo"].lower() or query in p["fecha"]
         ]
 
-    return render(request, 'proyectos/repositorio_proyectos.html', {
-        'proyectos': proyectos,
-        'query': query
-    })
+    return render(
+        request,
+        "proyectos/repositorio_proyectos.html",
+        {"proyectos": proyectos, "query": query},
+    )
 
 
-# 🟢 DETALLE DE PROYECTO
 def detalle_proyecto(request, id):
-    proyectos = [
-        {
-            "id": 1,
-            "titulo": "Sistema de Gestión Educativa",
-            "fecha": "15/03/2026",
-            "descripcion": "Sistema completo para gestionar alumnos, docentes y cursos."
-        },
-        {
-            "id": 2,
-            "titulo": "App de Salud Comunitaria",
-            "fecha": "02/04/2026",
-            "descripcion": "Aplicación para seguimiento de pacientes en zonas rurales."
-        },
-        {
-            "id": 3,
-            "titulo": "Portal de Extensión Universitaria",
-            "fecha": "10/04/2026",
-            "descripcion": "Plataforma institucional para gestión de proyectos."
-        }
-    ]
-
-    proyecto = next((p for p in proyectos if p["id"] == id), None)
+    proyecto = (
+        Proyecto.objects.select_related("sublinea", "proponente")
+        .filter(pk=id, estado=EstadoProyecto.APROBADO)
+        .first()
+    )
 
     if not proyecto:
         raise Http404("Proyecto no encontrado")
 
-    return render(request, 'proyectos/detalle_repositorio.html', {
-        'proyecto': proyecto
-    })
+    contexto = {
+        "id": proyecto.id,
+        "titulo": proyecto.denominacion,
+        "fecha": proyecto.fecha_inicio.strftime("%d/%m/%Y") if proyecto.fecha_inicio else "",
+        "descripcion": proyecto.fundamentacion or proyecto.objetivos_especificos or "",
+    }
+
+    return render(request, "proyectos/detalle_repositorio.html", {"proyecto": contexto})
 
 
-# MIS PROYECTOS 
-
-@login_required
+@solo_proponente
 def mis_proyectos(request):
+    proyectos_db = (
+        Proyecto.objects.filter(usuario_id=request.user.id)
+        .select_related("sublinea")
+        .order_by("-actualizado_en", "-idProyecto")
+    )
 
-    proyectos = [
-        # ✅ APROBADOS
-        {
-            "titulo": "Sistema Web de Biblioteca",
-            "estado": "aprobado",
-            "fecha": "2026-04-01"
-        },
-        {
-            "titulo": "Aplicación Móvil de Salud",
-            "estado": "aprobado",
-            "fecha": "2026-04-02"
-        },
+    proyectos = []
+    for p in proyectos_db:
+        ultima = None
+        if p.estado in (EstadoProyecto.SUGERENCIAS, EstadoProyecto.RECHAZADO):
+            ultima = ultima_revision_proyecto(p.idProyecto)
 
-        # ⏳ PENDIENTES
-        {
-            "titulo": "Sistema de Inventario",
-            "estado": "pendiente",
-            "fecha": "2026-04-03"
-        },
+        item = {
+            "id": p.idProyecto,
+            "titulo": p.denominacion or f"Proyecto #{p.idProyecto}",
+            "estado": p.estado or EstadoProyecto.BORRADOR,
+            "fecha": p.fecha_inicio.isoformat() if p.fecha_inicio else "",
+            "puede_editar": p.estado in EstadoProyecto.EDITABLES,
+            "comentario_director": ultima["comentario"] if ultima else "",
+        }
+        proyectos.append(item)
 
-        # 🟡 CON SUGERENCIAS
-        {
-            "titulo": "Plataforma Educativa",
-            "estado": "sugerencias",
-            "fecha": "2026-04-04",
-            "comentario": "Mejorar la justificación del impacto social."
-        },
+    return render(request, "proyectos/mis_proyectos.html", {"proyectos": proyectos})
 
-        # 📝 BORRADOR
-        {
-            "titulo": "Sistema Contable",
-            "estado": "borrador",
-            "fecha": "2026-04-05"
-        },
 
-        # ❌ RECHAZADO
-        {
-            "titulo": "App de Delivery",
-            "estado": "rechazado",
-            "fecha": "2026-04-06",
-            "comentario": "El proyecto no cumple con los requisitos mínimos."
-        },
-    ]
-
-    return render(request, 'proyectos/mis_proyectos.html', {
-        'proyectos': proyectos
-    })
-    
-@login_required
+@solo_proponente
 def nuevo_proyecto(request):
     if request.method == "POST":
-        accion = request.POST.get("accion")
+        return _procesar_guardado_formulario(request)
+    return render(
+        request,
+        "proyectos/nuevo_proyecto.html",
+        _contexto_formulario_proyecto(),
+    )
 
-        if accion == "borrador":
-            estado = "BORRADOR"
-        elif accion == "enviar":
-            estado = "PENDIENTE"
-        else:
-            estado = "BORRADOR"  # fallback
 
-        # Ejemplo: imprimir para probar
-        print("Estado:", estado)
-
-        # Aquí luego guardarías en la BD
-        # Proyecto.objects.create(..., estado=estado)
-
+@solo_proponente
+def editar_proyecto(request, id):
+    proyecto = obtener_proyecto_editable(id, request.user)
+    if not proyecto:
+        messages.error(
+            request,
+            "Este proyecto no puede editarse (aprobado, rechazado o no le pertenece).",
+        )
         return redirect("mis_proyectos")
 
-    return render(request, "proyectos/nuevo_proyecto.html")
+    if request.method == "POST":
+        return _procesar_guardado_formulario(request, proyecto_id=id)
+
+    return render(
+        request,
+        "proyectos/nuevo_proyecto.html",
+        _contexto_formulario_proyecto(proyecto),
+    )
+
+
+@solo_proponente
+@require_POST
+def eliminar_proyecto(request, id):
+    try:
+        eliminar_proyecto_de_usuario(id, request.user)
+    except ErrorGuardadoProyecto as exc:
+        messages.error(request, str(exc))
+    else:
+        messages.success(request, "Proyecto eliminado correctamente.")
+    return redirect("mis_proyectos")
