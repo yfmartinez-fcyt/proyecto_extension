@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Actividad, Facultad, LineaAccion, Sublinea
+
+admin.site.register(LineaAccion)
+admin.site.register(Sublinea)
+admin.site.register(Facultad)
+admin.site.register(Actividad)
