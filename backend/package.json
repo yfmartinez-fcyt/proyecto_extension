@@ -1,0 +1,29 @@
+{
+  "name": "proyecto-extension-backend",
+  "version": "2.0.0",
+  "description": "API REST Proyectos de Extensión — Express + PostgreSQL",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:prod": "set NODE_ENV=production&& node src/server.js",
+    "dev": "nodemon src/server.js",
+    "setup:db": "node ensure_db.js",
+    "reset:db": "node reset_db.js",
+    "seed": "node seed_users.js",
+    "user:create": "node create_user.js",
+    "migrate:drop-personas": "node migrate_drop_personas.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

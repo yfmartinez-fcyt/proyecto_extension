@@ -1,36 +1,12 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-*.egg-info/
+node_modules/
 dist/
-build/
-
-# Entorno virtual
-.venv/
-venv/
-env/
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-media/
-
-# Variables de entorno
 .env
-.env.local
-
-# IDE / OS
-.idea/
-.vscode/
-*.swp
-Thumbs.db
-Desktop.ini
-
-# Cobertura y tests
-.coverage
-htmlcov/
+backend/.env
+frontend/.env
+uploads/
+*.log
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
 .pytest_cache/
