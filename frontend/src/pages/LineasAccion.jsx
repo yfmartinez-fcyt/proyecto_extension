@@ -1,43 +1,145 @@
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import '../styles/inicio.css';
+import { useMemo, useState } from "react";
+
+import lineasAccion from "../data/lineasAccion";
+
+import LineaCard from "../components/LineaCard";
+import LineaModal from "../components/LineaModal";
+import LineasHero from "../components/LineasHero";
+import LineasStats from "../components/LineasStats";
+
+import "../styles/lineasAccion.css";
+
 
 export default function LineasAccion() {
-  const [lineas, setLineas] = useState([]);
-  const [error, setError] = useState('');
 
-  useEffect(() => {
-    api
-      .catalogo()
-      .then((r) => setLineas(r.data.lineas || []))
-      .catch((e) => setError(e.message));
-  }, []);
+    const [busqueda, setBusqueda] = useState("");
 
-  return (
-    <div className="app-content-page">
-      <section className="page-header mb-4">
-        <h1 className="page-title">Líneas de Acción</h1>
-        <p className="page-subtitle">Estás en la página de Líneas de Acción</p>
-      </section>
+    const [seleccionada, setSeleccionada] = useState(null);
 
-      {error && <div className="alert alert-danger">{error}</div>}
 
-      {lineas.length > 0 && (
-        <div className="row g-4">
-          {lineas.map((l) => (
-            <div className="col-md-6" key={l.id}>
-              <div className="content-card h-100">
-                <h3 className="section-title mb-2">{l.nombre}</h3>
-                <ul className="mb-0 ps-3">
-                  {(l.sublineas || []).map((s) => (
-                    <li key={s.id}>{s.nombre}</li>
-                  ))}
-                </ul>
-              </div>
+
+    const filtradas = useMemo(() => {
+
+        return lineasAccion.filter((linea) => {
+
+            const texto =
+                `${linea.area}
+                ${linea.descripcion}
+                ${linea.sublineas.join(" ")}`
+                .toLowerCase();
+
+
+            return texto.includes(
+                busqueda.toLowerCase()
+            );
+
+        });
+
+
+    }, [busqueda]);
+
+
+
+    return (
+
+        <div className="lineas-page">
+
+
+            {/* Cabecera de la página */}
+            <LineasHero />
+
+
+            {/* Estadísticas */}
+            <LineasStats />
+
+
+
+            {/* Buscador */}
+            <div className="lineas-search">
+
+                <i className="bi bi-search"></i>
+
+                <input
+
+                    type="text"
+
+                    placeholder="Buscar línea de acción..."
+
+                    value={busqueda}
+
+                    onChange={(e) =>
+                        setBusqueda(e.target.value)
+                    }
+
+                />
+
             </div>
-          ))}
+
+
+
+            {/* Tarjetas de líneas */}
+            <div className="lineas-grid">
+
+
+                {
+                    filtradas.map((linea) => (
+
+                        <LineaCard
+
+                            key={linea.id}
+
+                            linea={linea}
+
+                            onSelect={setSeleccionada}
+
+                        />
+
+                    ))
+                }
+
+
+            </div>
+
+
+
+
+            {/* Sin resultados */}
+            {
+                filtradas.length === 0 && (
+
+                    <div className="lineas-empty">
+
+                        <i className="bi bi-search"></i>
+
+                        <h3>
+                            No se encontraron resultados
+                        </h3>
+
+                        <p>
+                            Intenta buscar otra línea de acción.
+                        </p>
+
+                    </div>
+
+                )
+            }
+
+
+
+            {/* Modal de detalle */}
+            <LineaModal
+
+                linea={seleccionada}
+
+                onClose={() =>
+                    setSeleccionada(null)
+                }
+
+            />
+
+
         </div>
-      )}
-    </div>
-  );
+
+    );
+
 }
