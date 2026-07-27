@@ -1,59 +1,196 @@
+const { pool } = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { pool } = require('../config/db');
+const { validateRegister } = require('../utils/validators');
 
-const generateAccessToken = (user, sessionId) =>
-  jwt.sign(
-    { id: user.id, username: user.username, email: user.email, rol: user.rol, sid: sessionId },
+// Generar Access Token (vida configurable, default: 5 min)
+// Incluimos el rol en el payload del JWT para validaciones rápidas en el cliente y middleware
+const generateAccessToken = (user, sessionId) => {
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      rol: user.rol,
+      sid: sessionId
+    },
     process.env.JWT_ACCESS_SECRET,
-    { expiresIn: process.env.JWT_ACCESS_EXPIRES || '8h' }
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES || '5m' }
   );
+};
 
-const generateRefreshToken = (user) =>
-  jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
-  });
+// Generar Refresh Token (vida configurable, default: 1 hora)
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user.id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES || '1h' }
+  );
+};
 
+// Registro de usuario
+const register = async (req, res) => {
+  try {
+
+    const validation = validateRegister(req.body);
+
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validation.message
+      });
+    }
+
+
+    const {
+      nombre,
+      apellido,
+      email,
+      username,
+      password,
+      rol
+    } = validation.data;
+
+
+    // Verificar email o username existente
+    const userExists = await pool.query(
+      `
+      SELECT id 
+      FROM usuarios 
+      WHERE email = $1 OR username = $2
+      `,
+      [email, username]
+    );
+
+
+    if (userExists.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'El email o username ya está registrado'
+      });
+    }
+
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+
+    const result = await pool.query(
+      `
+      INSERT INTO usuarios
+      (
+        nombre,
+        apellido,
+        email,
+        username,
+        password_hash,
+        rol
+      )
+      VALUES
+      ($1,$2,$3,$4,$5,$6)
+      RETURNING 
+        id,
+        nombre,
+        apellido,
+        email,
+        username,
+        rol,
+        creado_en
+      `,
+      [
+        nombre,
+        apellido,
+        email,
+        username,
+        hashedPassword,
+        rol
+      ]
+    );
+
+
+    res.status(201).json({
+      success: true,
+      message: 'Usuario registrado exitosamente',
+      data: result.rows[0]
+    });
+
+
+  } catch (error) {
+
+    console.error('Error en register:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
+    });
+  }
+};
+
+// Login de usuario
 const login = async (req, res) => {
   try {
-    const identificador = (req.body.identificador || req.body.username || req.body.email || '').trim();
+    // Puede ser un email o un username
+    const identificador = req.body.identificador?.trim();
     const { password } = req.body;
 
     if (!identificador || !password) {
-      return res.status(400).json({ success: false, message: 'Usuario/email y contraseña requeridos' });
+      return res.status(400).json({
+        success: false,
+        message: 'Correo electrónico o nombre de usuario y contraseña requeridos'
+      });
     }
 
+    // Buscar usuario por email o username (ignorando mayúsculas/minúsculas)
     const result = await pool.query(
-      `SELECT * FROM usuarios
-       WHERE activo = TRUE AND (LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($1))
+      `SELECT *
+       FROM usuarios
+       WHERE activo = TRUE
+         AND (
+           LOWER(email) = LOWER($1)
+           OR LOWER(username) = LOWER($1)
+         )
        LIMIT 1`,
       [identificador]
     );
 
-    if (!result.rows.length) {
-      return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciales inválidas'
+      });
     }
 
     const user = result.rows[0];
-    const ok = await bcrypt.compare(password, user.password_hash);
-    if (!ok) {
-      return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+
+    // Verificar contraseña
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciales inválidas'
+      });
     }
 
+    // Generar Refresh Token
     const refreshToken = generateRefreshToken(user);
+
+    // Guardar Refresh Token en la base de datos
     const resultToken = await pool.query(
       `INSERT INTO refresh_tokens (usuario_id, token, expires_at)
-       VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '7 days') RETURNING id`,
+       VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '1 hour')
+       RETURNING id`,
       [user.id, refreshToken]
     );
 
-    const accessToken = generateAccessToken(user, resultToken.rows[0].id);
+    const sessionId = resultToken.rows[0].id;
+    const accessToken = generateAccessToken(user, sessionId);
 
+    // Guardar Refresh Token en cookie HTTP-only
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+      maxAge: 1 * 60 * 60 * 1000
     });
 
     res.json({
@@ -61,101 +198,144 @@ const login = async (req, res) => {
       accessToken,
       user: {
         id: user.id,
-        email: user.email,
         username: user.username,
         nombre: user.nombre,
         apellido: user.apellido,
-        rol: user.rol,
-      },
+        email: user.email,
+        rol: user.rol
+      }
     });
+
   } catch (error) {
     console.error('Error en login:', error);
-    res.status(500).json({ success: false, message: 'Error en el servidor' });
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
+    });
   }
 };
 
+// Renovar Access Token (con rotación de Refresh Token)
 const refresh = async (req, res) => {
   try {
     const oldRefreshToken = req.cookies.refreshToken;
+
     if (!oldRefreshToken) {
       return res.status(401).json({ success: false, message: 'No hay refresh token' });
     }
 
+    // 1. Verificar si el token existe en la base de datos
     const dbToken = await pool.query('SELECT * FROM refresh_tokens WHERE token = $1', [oldRefreshToken]);
-    if (!dbToken.rows.length) {
-      res.clearCookie('refreshToken');
+
+    if (dbToken.rows.length === 0) {
+      // Si el token no está en la DB pero sí en la cookie, podría ser un intento de reutilización
+      // En un sistema estricto, aquí podríamos invalidar TODAS las sesiones del usuario
+
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production'
+      });
+
       return res.status(403).json({ success: false, message: 'Token no válido o ya utilizado' });
     }
 
-    let decoded;
-    try {
-      decoded = jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET);
-    } catch {
+    // 2. Verificar JWT
+    jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
+      if (err) {
+        // Si el token expiró o es inválido, lo borramos de la DB
+        await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [oldRefreshToken]);
+
+        res.clearCookie('refreshToken', {
+          httpOnly: true,
+          sameSite: 'strict',
+          secure: process.env.NODE_ENV === 'production'
+        });
+
+        return res.status(403).json({ success: false, message: 'Refresh token inválido o expirado' });
+      }
+
+      // 3. Buscar usuario
+      const result = await pool.query('SELECT id, nombre, apellido, email, rol FROM usuarios WHERE id = $1', [decoded.id]);
+      if (result.rows.length === 0) {
+        return res.status(403).json({ success: false, message: 'Usuario no encontrado' });
+      }
+
+      const user = result.rows[0];
+
+      // 4. ROTACIÓN: Borrar token viejo y crear uno nuevo
       await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [oldRefreshToken]);
-      res.clearCookie('refreshToken');
-      return res.status(403).json({ success: false, message: 'Refresh token inválido o expirado' });
-    }
 
-    const result = await pool.query(
-      'SELECT id, email, username, nombre, apellido, rol FROM usuarios WHERE id = $1 AND activo = TRUE',
-      [decoded.id]
-    );
-    if (!result.rows.length) {
-      return res.status(403).json({ success: false, message: 'Usuario no encontrado' });
-    }
+      const newRefreshToken = generateRefreshToken(user);
 
-    const user = result.rows[0];
-    await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [oldRefreshToken]);
+      const resultToken = await pool.query(
+        'INSERT INTO refresh_tokens (usuario_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'1 hour\') RETURNING id',
+        [user.id, newRefreshToken]
+      );
 
-    const newRefreshToken = generateRefreshToken(user);
-    const resultToken = await pool.query(
-      `INSERT INTO refresh_tokens (usuario_id, token, expires_at)
-       VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '7 days') RETURNING id`,
-      [user.id, newRefreshToken]
-    );
+      const sessionId = resultToken.rows[0].id;
+      const newAccessToken = generateAccessToken(user, sessionId);
 
-    const newAccessToken = generateAccessToken(user, resultToken.rows[0].id);
+      // 5. Actualizar cookie
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 1 * 60 * 60 * 1000
+      });
 
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      res.json({ success: true, accessToken: newAccessToken });
     });
-
-    res.json({ success: true, accessToken: newAccessToken });
   } catch (error) {
     console.error('Error en refresh:', error);
     res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
+// Logout
 const logout = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
+
     if (refreshToken) {
+      // Borrar de la base de datos
       await pool.query('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken]);
     }
-    res.clearCookie('refreshToken');
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production'
+    });
+
     res.json({ success: true, message: 'Sesión cerrada correctamente' });
   } catch (error) {
+    console.error('Error en logout:', error);
     res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
+// Obtener info del usuario actual
 const getMe = async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT id, email, username, nombre, apellido, rol, creado_en FROM usuarios WHERE id = $1',
-      [req.user.id]
-    );
-    if (!result.rows.length) {
+    // req.user viene del middleware de autenticación
+    const result = await pool.query('SELECT id, nombre, apellido, email, rol, creado_en FROM usuarios WHERE id = $1', [req.user.id]);
+
+    if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     }
+
     res.json({ success: true, data: result.rows[0] });
   } catch (error) {
+    console.error('Error en getMe:', error);
     res.status(500).json({ success: false, message: 'Error en el servidor' });
   }
 };
 
-module.exports = { login, refresh, logout, getMe };
+module.exports = {
+  register,
+  login,
+  refresh,
+  logout,
+  getMe
+};

@@ -34,4 +34,11 @@ const AccionDirector = {
 
 const ROLES_PROPONENTE = ['alumno', 'docente', 'admin'];
 
-module.exports = { EstadoProyecto, AccionDirector, ROLES_PROPONENTE };
+const ROLES_USUARIO = [
+  'admin',
+  'director_extension',
+  'alumno',
+  'docente'
+];
+
+module.exports = { EstadoProyecto, AccionDirector, ROLES_PROPONENTE, ROLES_USUARIO };
