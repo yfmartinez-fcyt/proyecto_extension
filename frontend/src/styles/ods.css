@@ -1,0 +1,512 @@
+/* ===========================
+   CONTENEDOR
+=========================== */
+
+.ods-page {
+    max-width: 1400px;
+    margin: auto;
+}
+
+
+/* ===========================
+   HERO
+=========================== */
+
+.ods-hero {
+
+   background: linear-gradient(135deg,#1565C0,#0D47A1);
+
+    color: white;
+
+    border-radius: 22px;
+
+    padding: 50px;
+
+    margin-bottom: 35px;
+
+    box-shadow: 0 20px 45px rgba(13, 110, 253, .20);
+
+    position: relative;
+    
+    overflow: hidden;
+
+}
+
+.ods-badge {
+
+    display: inline-block;
+
+    background: rgba(255, 255, 255, .15);
+
+    backdrop-filter: blur(8px);
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    font-size: .9rem;
+
+    margin-bottom: 18px;
+
+}
+
+.ods-hero h1 {
+
+    font-size: 2.4rem;
+
+    font-weight: 700;
+
+    margin-bottom: 20px;
+
+}
+
+.ods-hero p{
+    margin-top: 8px;
+    max-width: 780px;
+    line-height: 1.7;
+}
+
+
+/* ===========================
+   ESTADISTICAS
+=========================== */
+
+.ods-stats {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 22px;
+
+    margin-bottom: 35px;
+
+}
+
+.ods-stat-card {
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 28px;
+
+    text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+
+    transition: .25s;
+
+}
+
+.ods-stat-card:hover {
+
+    transform: translateY(-6px);
+
+}
+
+.ods-stat-card h2 {
+
+    color: #0d6efd;
+
+    font-size: 2.5rem;
+
+    margin-bottom: 10px;
+
+}
+
+.ods-stat-card span {
+
+    color: #666;
+
+    font-weight: 500;
+
+}
+
+
+/* ===========================
+   BUSCADOR
+=========================== */
+
+.ods-search {
+
+    margin-bottom: 35px;
+
+}
+
+.ods-search .form-control {
+
+    height: 55px;
+
+    border-radius: 14px;
+
+    font-size: 1rem;
+
+}
+
+.ods-search .input-group-text {
+
+    border-radius: 14px 0 0 14px;
+
+}
+
+
+/* ===========================
+   GRID
+=========================== */
+
+.ods-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+
+    gap: 25px;
+
+}
+
+/* ===========================
+   TARJETA
+=========================== */
+
+.ods-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+
+    transition: transform .25s ease, box-shadow .25s ease;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    animation: fadeUp .45s ease;
+}
+
+.ods-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .15);
+}
+
+.ods-card-header {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    height: 170px;
+
+}
+
+.ods-card-image {
+
+    width: 120px;
+
+    height: auto;
+
+}
+
+.ods-card-body {
+
+    padding: 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.ods-card-number {
+
+    color: #666;
+
+    font-weight: 600;
+
+    font-size: .9rem;
+
+}
+
+.ods-card-title {
+
+    margin-top: 10px;
+
+    margin-bottom: 12px;
+
+    font-weight: 700;
+
+    min-height: 55px;
+
+}
+
+.ods-card-description {
+
+    color: #666;
+
+    line-height: 1.6;
+
+}
+
+/* ===========================
+   MODAL
+=========================== */
+
+.ods-modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, .65);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+
+    padding: 20px;
+
+    animation: fadeIn .25s;
+
+}
+
+.ods-modal{
+    background:white;
+    width:100%;
+    max-width:850px;
+    max-height:90vh;
+
+    border-radius:22px;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    animation:zoomIn .30s;
+
+    position:relative;
+}
+
+.ods-modal-header {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 45px;
+
+}
+
+.ods-modal-image {
+
+    width: 180px;
+
+}
+
+.ods-modal-content {
+
+    padding: 35px;
+
+} 
+
+.ods-modal-number {
+
+    font-weight: 700;
+
+}
+
+.ods-modal-close {
+
+    position: absolute;
+
+    right: 20px;
+
+    top: 20px;
+
+    border: none;
+
+    background: white;
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 50%;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .15);
+
+}
+
+.ods-section {
+
+    margin-top: 30px;
+
+}
+
+/* ===========================
+   SIN RESULTADOS
+=========================== */
+
+.ods-empty {
+
+    text-align: center;
+
+    padding: 70px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+
+}
+
+.ods-empty i {
+
+    font-size: 60px;
+
+    color: #0d6efd;
+
+}
+
+.ods-hero-title{
+    display:flex;
+    align-items:center;
+    gap:24px;
+    margin-bottom:18px;
+}
+
+.ods-logo{
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+.ods-watermark{
+    position: absolute;
+    right: -70px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 320px;
+
+    opacity: .04;
+
+    pointer-events: none;
+}
+
+
+/* ===========================
+   ANIMACIONES
+=========================== */
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+@keyframes fadeIn {
+
+    from {
+
+        opacity: 0;
+
+    }
+
+    to {
+
+        opacity: 1;
+
+    }
+
+}
+
+@keyframes zoomIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: scale(.9);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:992px) {
+
+    .ods-stats {
+
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+
+}
+
+@media(max-width:768px) {
+
+    .ods-hero {
+
+        padding: 35px;
+
+    }
+
+    .ods-hero h1 {
+
+        font-size: 2rem;
+
+    }
+
+}
+
+@media(max-width:576px) {
+
+    .ods-stats {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .ods-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .ods-modal-content {
+
+        padding: 25px;
+
+    }
+
+}
