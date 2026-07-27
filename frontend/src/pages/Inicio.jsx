@@ -3,66 +3,9 @@ import { api } from '../services/api';
 import '../styles/inicio.css';
 
 /**
- * Mismo contexto provisional que apps/core/views.py (Django),
- * para que el panel se vea igual a las capturas institucionales.
+ * Dashboard principal de proyectos de extensión.
+ * Los datos son obtenidos desde el endpoint público /api/proyectos/dashboard.
  */
-const INICIO_DEMO = {
-  total_aprobados: 193,
-  aprobados_anio: 41,
-  lineas_labels: [
-    'Bienestar social y cultural',
-    'Ambiente',
-    'Comunidad',
-    'Desarrollo tecnológico',
-    'Economía',
-    'Transversales',
-  ],
-  lineas_data: [41, 30, 26, 27, 34, 35],
-  sublineas: {
-    'Bienestar social y cultural': {
-      labels: [
-        'Inclusión Social y Promoción del Derecho',
-        'Prevención de enfermedades',
-        'Promoción y servicios de la Salud',
-        'Promoción cultural y deportiva; formación cultural y desarrollo profesional',
-      ],
-      data: [7, 15, 8, 11],
-    },
-    Ambiente: {
-      labels: [
-        'Educación Ambiental, producción de servicios sustentables, sostenidos y sostenibles',
-        'Preservación de recursos naturales',
-      ],
-      data: [10, 20],
-    },
-    Comunidad: {
-      labels: [
-        'Vinculación de la Extensión Universitaria con la Academia, la Investigación y el Bienestar Estudiantil para programas o proyectos',
-        'Prácticas socioeducativas, aprendizaje, servicios o proyectos sociales estudiantiles',
-      ],
-      data: [12, 14],
-    },
-    'Desarrollo tecnológico': {
-      labels: [
-        'Proyectos de Innovación',
-        'Investigación aplicada y resolución de problemas',
-        'Transferencias científicas y tecnológicas',
-      ],
-      data: [9, 8, 10],
-    },
-    Economía: {
-      labels: [
-        'Indicadores socioeconómicos para contribuir con las políticas públicas',
-        'Generación del crecimiento económico a través de la innovación y el emprendedorismo',
-      ],
-      data: [19, 15],
-    },
-    Transversales: {
-      labels: ['Servicio Técnico Profesional', 'Espacio de intercambio de saberes', 'Casos excepcionales'],
-      data: [15, 15, 5],
-    },
-  },
-};
 
 /** Igual que static/js/inicio.js */
 function wrapLabel(text, maxLength = 30) {
@@ -92,45 +35,6 @@ function wrapLabel(text, maxLength = 30) {
   return lines;
 }
 
-function buildFromItems(items, catalogoLineas) {
-  const lineasCount = {};
-  const subMap = {};
-
-  catalogoLineas.forEach((l) => {
-    lineasCount[l.nombre] = 0;
-    subMap[l.nombre] = {
-      labels: (l.sublineas || []).map((s) => s.nombre),
-      data: (l.sublineas || []).map(() => 0),
-    };
-  });
-
-  items.forEach((p) => {
-    const linea = p.linea || 'Sin línea';
-    const sub = p.sublinea || 'Sin sublínea';
-    lineasCount[linea] = (lineasCount[linea] || 0) + 1;
-    if (!subMap[linea]) subMap[linea] = { labels: [], data: [] };
-    const idx = subMap[linea].labels.indexOf(sub);
-    if (idx === -1) {
-      subMap[linea].labels.push(sub);
-      subMap[linea].data.push(1);
-    } else {
-      subMap[linea].data[idx] += 1;
-    }
-  });
-
-  const year = new Date().getFullYear();
-  const labels = Object.keys(lineasCount);
-  return {
-    total_aprobados: items.length,
-    aprobados_anio: items.filter(
-      (p) => p.actualizado_en && new Date(p.actualizado_en).getFullYear() === year
-    ).length,
-    lineas_labels: labels,
-    lineas_data: labels.map((l) => lineasCount[l]),
-    sublineas: subMap,
-  };
-}
-
 /** Misma animación de carga que Chart.js en Django (barras / doughnut). */
 const CHART_ANIMATION = {
   duration: 1200,
@@ -140,7 +44,7 @@ const CHART_ANIMATION = {
 function observeOnce(element, onVisible) {
   if (!element || typeof IntersectionObserver === 'undefined') {
     onVisible();
-    return () => {};
+    return () => { };
   }
 
   let done = false;
@@ -158,12 +62,21 @@ function observeOnce(element, onVisible) {
   return () => observer.disconnect();
 }
 
+function EmptyChart({ icon, message }) {
+  return (
+    <div className="empty-chart">
+      <i className={`bi ${icon}`} />
+      <p>{message}</p>
+    </div>
+  );
+}
+
 export default function Inicio() {
-  const [items, setItems] = useState([]);
-  const [catalogoLineas, setCatalogoLineas] = useState([]);
   const [error, setError] = useState('');
   const [dataReady, setDataReady] = useState(false);
-  const [lineaSel, setLineaSel] = useState(INICIO_DEMO.lineas_labels[0]);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [panelData, setPanelData] = useState(null);
+  const [lineaSel, setLineaSel] = useState('');
   const lineasRef = useRef(null);
   const sublineasRef = useRef(null);
   const lineasWrapRef = useRef(null);
@@ -173,11 +86,12 @@ export default function Inicio() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([api.repositorio(''), api.catalogo()])
-      .then(([repo, cat]) => {
-        if (cancelled) return;
-        setItems(repo.data || []);
-        setCatalogoLineas(cat.data?.lineas || []);
+
+    api.dashboard()
+      .then((dashboard) => {
+        if (!cancelled) {
+          setDashboardData(dashboard.data);
+        }
       })
       .catch((e) => {
         if (!cancelled) setError(e.message);
@@ -191,10 +105,39 @@ export default function Inicio() {
   }, []);
 
   const panel = useMemo(() => {
-    // Con proyectos reales: datos vivos. Sin datos: mismo demo que Django.
-    if (items.length > 0) return buildFromItems(items, catalogoLineas);
-    return INICIO_DEMO;
-  }, [items, catalogoLineas]);
+    if (!dashboardData) {
+      return {
+        total_aprobados: 0,
+        aprobados_anio: 0,
+        lineas_labels: [],
+        lineas_data: [],
+        sublineas: {}
+      };
+    }
+    const lineas_labels = dashboardData.lineas.map(
+      linea => linea.nombre
+    );
+    const lineas_data = dashboardData.lineas.map(
+      linea => linea.cantidad
+    );
+    const sublineas = {};
+
+    Object.entries(dashboardData.sublineas).forEach(
+      ([linea, datos]) => {
+        sublineas[linea] = {
+          labels: datos.map(item => item.nombre),
+          data: datos.map(item => item.cantidad)
+        };
+      }
+    );
+    return {
+      total_aprobados: dashboardData.total_aprobados,
+      aprobados_anio: dashboardData.aprobados_anio,
+      lineas_labels,
+      lineas_data,
+      sublineas
+    };
+  }, [dashboardData]);
 
   useEffect(() => {
     if (panel.lineas_labels.length && !panel.lineas_labels.includes(lineaSel)) {
@@ -205,7 +148,11 @@ export default function Inicio() {
   useEffect(() => {
     if (!dataReady) return;
     const Chart = window.Chart;
-    if (!Chart || !lineasRef.current) return;
+    if (
+      !Chart ||
+      !lineasRef.current ||
+      panel.lineas_labels.length === 0
+    ) return;
 
     let cancelled = false;
     let raf = 0;
@@ -227,6 +174,7 @@ export default function Inicio() {
                 data: panel.lineas_data,
                 borderWidth: 1,
                 borderRadius: 10,
+                backgroundColor: 'rgba(54, 162, 235, .7)',
               },
             ],
           },
@@ -274,7 +222,11 @@ export default function Inicio() {
     if (!Chart || !sublineasRef.current) return;
 
     const info = panel.sublineas[lineaSel];
-    if (!info) return;
+
+    if (
+      !info ||
+      info.labels.length === 0
+    ) return;
 
     let cancelled = false;
     let raf = 0;
@@ -412,7 +364,14 @@ export default function Inicio() {
                 </div>
               </div>
               <div className="chart-wrapper" ref={lineasWrapRef}>
-                <canvas ref={lineasRef} id="lineasChart" />
+                {panel.lineas_labels.length > 0 ? (
+                  <canvas ref={lineasRef} id="lineasChart" />
+                ) : (
+                  <EmptyChart
+                    icon="bi-bar-chart"
+                    message="Todavía no existen proyectos aprobados para mostrar."
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -432,22 +391,39 @@ export default function Inicio() {
                 <label htmlFor="lineaSelector" className="form-label section-label">
                   Seleccionar Línea de Acción
                 </label>
-                <select
-                  id="lineaSelector"
-                  className="form-select custom-select"
-                  value={lineaSel}
-                  onChange={(e) => setLineaSel(e.target.value)}
-                >
-                  {panel.lineas_labels.map((label) => (
-                    <option key={label} value={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                {panel.lineas_labels.length > 0 ? (
+
+                  <select
+                    id="lineaSelector"
+                    className="form-select custom-select"
+                    value={lineaSel}
+                    onChange={(e) => setLineaSel(e.target.value)}
+                  >
+                    {panel.lineas_labels.map((label) => (
+                      <option key={label} value={label}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+
+                ) : (
+
+                  <div className="selector-empty">
+                    No existen líneas de acción con proyectos aprobados.
+                  </div>
+
+                )}
               </div>
 
               <div className="chart-wrapper small-chart" ref={sublineasWrapRef}>
-                <canvas ref={sublineasRef} id="sublineasChart" />
+                {panel.sublineas[lineaSel]?.labels?.length > 0 ? (
+                  <canvas ref={sublineasRef} id="sublineasChart" />
+                ) : (
+                  <EmptyChart
+                    icon="bi-pie-chart"
+                    message="No hay proyectos registrados en esta línea."
+                  />
+                )}
               </div>
             </div>
           </div>

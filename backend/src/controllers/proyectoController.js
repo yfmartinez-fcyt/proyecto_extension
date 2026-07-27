@@ -168,6 +168,95 @@ const detalleRepositorio = async (req, res) => {
   }
 };
 
+const dashboard = async(req,res)=>{
+  try {
+
+    const total = await pool.query(`
+      SELECT COUNT(*) 
+      FROM proyectos
+      WHERE estado='aprobado'
+    `);
+
+
+    const anio = await pool.query(`
+      SELECT COUNT(*)
+      FROM proyectos
+      WHERE estado='aprobado'
+      AND EXTRACT(YEAR FROM actualizado_en)=EXTRACT(YEAR FROM CURRENT_DATE)
+    `);
+
+
+    const lineas = await pool.query(`
+      SELECT 
+        l.nombre,
+        COUNT(p.id)::int AS cantidad
+      FROM proyectos p
+      INNER JOIN sublineas s
+        ON s.id=p.sublinea_id
+      INNER JOIN lineas_accion l
+        ON l.id=s.linea_id
+      WHERE p.estado='aprobado'
+      GROUP BY l.nombre
+      ORDER BY cantidad DESC
+    `);
+
+
+    const sublineas = await pool.query(`
+      SELECT 
+        l.nombre AS linea,
+        s.nombre AS sublinea,
+        COUNT(p.id)::int AS cantidad
+      FROM proyectos p
+      INNER JOIN sublineas s
+        ON s.id=p.sublinea_id
+      INNER JOIN lineas_accion l
+        ON l.id=s.linea_id
+      WHERE p.estado='aprobado'
+      GROUP BY l.nombre,s.nombre
+    `);
+
+
+
+    const resultadoSub = {};
+
+    sublineas.rows.forEach(item=>{
+
+      if(!resultadoSub[item.linea]){
+        resultadoSub[item.linea]=[];
+      }
+
+      resultadoSub[item.linea].push({
+        nombre:item.sublinea,
+        cantidad:item.cantidad
+      });
+
+    });
+
+
+
+    res.json({
+      success:true,
+      data:{
+        total_aprobados:Number(total.rows[0].count),
+        aprobados_anio:Number(anio.rows[0].count),
+        lineas:lineas.rows,
+        sublineas:resultadoSub
+      }
+    });
+
+
+  }catch(error){
+
+    console.error(error);
+
+    res.status(500).json({
+      success:false,
+      message:'Error al obtener dashboard'
+    });
+
+  }
+};
+
 module.exports = {
   listarMios,
   obtenerUno,
@@ -175,4 +264,5 @@ module.exports = {
   eliminar,
   repositorio,
   detalleRepositorio,
+  dashboard
 };

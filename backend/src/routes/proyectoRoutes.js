@@ -8,14 +8,18 @@ const {
   eliminar,
   repositorio,
   detalleRepositorio,
+  dashboard,
 } = require('../controllers/proyectoController');
 const { ROLES_PROPONENTE } = require('../utils/constants');
 
 const router = express.Router();
 
+// Rutas públicas
 router.get('/repositorio', repositorio);
 router.get('/repositorio/:id', detalleRepositorio);
+router.get('/dashboard', dashboard);
 
+// Rutas protegidas
 router.use(authMiddleware);
 
 router.get('/mios', authorize(ROLES_PROPONENTE), soloProponente, listarMios);

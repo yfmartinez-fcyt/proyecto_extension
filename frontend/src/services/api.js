@@ -95,6 +95,7 @@ export const authApi = {
 };
 
 export const api = {
+  dashboard: () => apiRequest('/api/proyectos/dashboard'),
   catalogo: () => apiRequest('/api/catalogo'),
   misProyectos: () => apiRequest('/api/proyectos/mios'),
   proyecto: (id) => apiRequest(`/api/proyectos/${id}`),
