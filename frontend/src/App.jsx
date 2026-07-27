@@ -5,6 +5,8 @@ import { GuestRoute, ProtectedRoute } from './components/ProtectedRoute';
 import Inicio from './pages/Inicio';
 import Login from './pages/Login';
 import Perfil from './pages/Perfil';
+import AuthLayout from './components/AuthLayout';
+import Register from './pages/Register';
 import LineasAccion from './pages/LineasAccion';
 import Soporte from './pages/Soporte';
 import MisProyectos from './pages/MisProyectos';
@@ -15,6 +17,7 @@ import DirectorDashboard from './pages/DirectorDashboard';
 import DirectorRevision from './pages/DirectorRevision';
 import PresentarInforme from './pages/PresentarInforme';
 import './styles/director.css';
+import './styles/auth.css';
 import ODS from './pages/ODS';
 
 
@@ -32,17 +35,20 @@ export default function App() {
   return (
     <>
       <BodyClassManager />
+
       <Routes>
+
         <Route
-          path="/login"
           element={
             <GuestRoute>
-              <Layout />
+              <AuthLayout />
             </GuestRoute>
           }
         >
-          <Route index element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
+
 
         <Route element={<Layout />}>
           <Route path="/" element={<Inicio />} />
@@ -51,6 +57,7 @@ export default function App() {
           <Route path="/proyectos/repositorio" element={<Repositorio />} />
           <Route path="/proyectos/detalle/:id" element={<DetalleRepositorio />} />
           <Route path="/ods" element={<ODS />} />
+
           <Route
             path="/perfil"
             element={
@@ -59,6 +66,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/proyectos/mis-proyectos"
             element={
@@ -67,6 +75,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/proyectos/nuevo"
             element={
@@ -75,6 +84,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/proyectos/editar/:id"
             element={
@@ -83,6 +93,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/informes/presentar"
             element={
@@ -92,6 +103,7 @@ export default function App() {
             }
           />
         </Route>
+
 
         <Route
           element={
@@ -104,7 +116,9 @@ export default function App() {
           <Route path="/director/revision/:id" element={<DirectorRevision />} />
         </Route>
 
+
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </>
   );

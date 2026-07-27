@@ -225,7 +225,8 @@ const updateUser = async (req, res) => {
       validateUpdateUser(
         req.body,
         {
-          allowRol: esAdmin
+          allowRol: esAdmin,
+          allowEmail: esAdmin
         }
       );
 
@@ -353,7 +354,9 @@ const updateUser = async (req, res) => {
         [
           nombre ?? current.nombre,
           apellido ?? current.apellido,
-          email ?? current.email,
+          esAdmin
+            ? (email ?? current.email)
+            : current.email,
           username ?? current.username,
           esAdmin ? (rol ?? current.rol) : current.rol,
           id
@@ -436,12 +439,56 @@ const getAllSessions = async (req, res) => {
     });
 
   }
-
 };
+
+const getMyProfile = async(req,res)=>{
+  try{
+
+    const result = await pool.query(
+      `
+      SELECT 
+        id,
+        nombre,
+        apellido,
+        username,
+        email,
+        rol,
+        creado_en
+      FROM usuarios
+      WHERE id=$1
+      `,
+      [req.user.id]
+    );
+
+
+    if(!result.rows[0]){
+      return res.status(404).json({
+        success:false,
+        message:'Usuario no encontrado'
+      });
+    }
+
+
+    res.json({
+      success:true,
+      data:result.rows[0]
+    });
+
+
+  }catch(error){
+    console.error(error);
+
+    res.status(500).json({
+      success:false,
+      message:'Error al obtener perfil'
+    });
+  }
+}
 
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
-  getAllSessions
+  getAllSessions,
+  getMyProfile
 };

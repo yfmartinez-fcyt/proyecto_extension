@@ -172,7 +172,13 @@ const validateRegister = (body = {}) => {
  * Valida body para actualizar usuario
  * PUT /api/usuarios/:id
  */
-const validateUpdateUser = (body, { allowRol = false } = {}) => {
+const validateUpdateUser = (
+  body,
+  {
+    allowRol = false,
+    allowEmail = false
+  } = {}
+) => {
 
   const {
     nombre,
@@ -207,17 +213,17 @@ const validateUpdateUser = (body, { allowRol = false } = {}) => {
 
     if (!isNonEmptyString(nombre)) {
       return {
-        valid:false,
-        message:"El nombre no puede estar vacío"
+        valid: false,
+        message: "El nombre no puede estar vacío"
       };
     }
 
     const error = esNombreValido(nombre, "Nombre");
 
-    if(error){
+    if (error) {
       return {
-        valid:false,
-        message:error
+        valid: false,
+        message: error
       };
     }
   }
@@ -227,17 +233,17 @@ const validateUpdateUser = (body, { allowRol = false } = {}) => {
 
     if (!isNonEmptyString(apellido)) {
       return {
-        valid:false,
-        message:"El apellido no puede estar vacío"
+        valid: false,
+        message: "El apellido no puede estar vacío"
       };
     }
 
     const error = esNombreValido(apellido, "Apellido");
 
-    if(error){
+    if (error) {
       return {
-        valid:false,
-        message:error
+        valid: false,
+        message: error
       };
     }
   }
@@ -245,17 +251,26 @@ const validateUpdateUser = (body, { allowRol = false } = {}) => {
 
   if (email !== undefined) {
 
-    if (!isNonEmptyString(email)) {
+    if (!allowEmail) {
       return {
-        valid:false,
-        message:"El email no puede estar vacío"
+        valid: false,
+        message: "No tienes permiso para modificar el email"
       };
     }
 
+
+    if (!isNonEmptyString(email)) {
+      return {
+        valid: false,
+        message: "El email no puede estar vacío"
+      };
+    }
+
+
     if (!esCorreoValido(email)) {
       return {
-        valid:false,
-        message:"El email no es válido"
+        valid: false,
+        message: "El email no es válido"
       };
     }
   }
@@ -265,10 +280,10 @@ const validateUpdateUser = (body, { allowRol = false } = {}) => {
 
     const error = esUsernameValido(username);
 
-    if(error){
+    if (error) {
       return {
-        valid:false,
-        message:error
+        valid: false,
+        message: error
       };
     }
   }
@@ -277,16 +292,16 @@ const validateUpdateUser = (body, { allowRol = false } = {}) => {
   if (allowRol && rol !== undefined && !ROLES_USUARIO.includes(rol)) {
 
     return {
-      valid:false,
-      message:"El rol ingresado no es válido"
+      valid: false,
+      message: "El rol ingresado no es válido"
     };
 
   }
 
 
   return {
-    valid:true,
-    data:{
+    valid: true,
+    data: {
       nombre: nombre !== undefined ? nombre.trim() : undefined,
       apellido: apellido !== undefined ? apellido.trim() : undefined,
       email: email !== undefined ? email.trim().toLowerCase() : undefined,

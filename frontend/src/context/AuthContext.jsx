@@ -34,6 +34,10 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const register = async (data) => {
+    return await authApi.register(data);
+  };
+
   const logout = async () => {
     await authApi.logout();
     setUser(null);
@@ -47,6 +51,7 @@ export function AuthProvider({ children }) {
       isDirector: user?.rol === 'director_extension',
       isProponente: user && ['alumno', 'docente', 'admin'].includes(user.rol),
       login,
+      register,
       logout,
       reload: loadUser,
     }),

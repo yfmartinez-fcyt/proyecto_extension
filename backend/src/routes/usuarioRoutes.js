@@ -12,7 +12,14 @@ const { authorize } = require('../middleware/rolMiddleware');
 router.use(authMiddleware);
 
 
-// Obtener usuarios (solo admin)
+// Perfil actual
+router.get(
+  '/me',
+  usuarioController.getMyProfile
+);
+
+
+// Admin lista usuarios
 router.get(
   '/',
   authorize('admin'),
@@ -20,7 +27,7 @@ router.get(
 );
 
 
-// Crear usuario (solo admin)
+// Admin crea usuarios
 router.post(
   '/',
   authorize('admin'),
@@ -28,7 +35,7 @@ router.post(
 );
 
 
-// Obtener sesiones del sistema (solo admin)
+// Admin ve sesiones
 router.get(
   '/sessions',
   authorize('admin'),
@@ -36,11 +43,10 @@ router.get(
 );
 
 
-// Actualizar usuario
+// Usuario actualiza su perfil o admin actualiza usuarios
 router.put(
   '/:id',
   usuarioController.updateUser
 );
-
 
 module.exports = router;

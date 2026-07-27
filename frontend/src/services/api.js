@@ -84,6 +84,12 @@ export const authApi = {
     setAccessToken(data.accessToken);
     return data;
   },
+  register: async (payload) => {
+    return await apiRequest('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
   logout: async () => {
     try {
       await apiRequest('/api/auth/logout', { method: 'POST' });
@@ -121,4 +127,14 @@ export const api = {
   proyectosAprobados: () => apiRequest('/api/informes/proyectos-aprobados'),
   presentarInforme: (formData) =>
     apiRequest('/api/informes', { method: 'POST', body: formData }),
+
+  usuarios: {
+    perfil: () => apiRequest('/api/usuarios/me'),
+
+    actualizar: (id, body) =>
+      apiRequest(`/api/usuarios/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      })
+  }
 };
