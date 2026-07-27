@@ -126,6 +126,16 @@ function PublicSidebar() {
             </NavLink>
           </li>
           <li className="nav-item">
+            <NavLink
+              className={linkClass}
+              to="/ods"
+              onClick={onNav}
+            >
+              <i className="bi bi-globe-americas me-2"></i>
+              ODS
+            </NavLink>
+          </li>
+          <li className="nav-item">
             <NavLink className={linkClass} to="/proyectos/repositorio" onClick={onNav}>
               <i className="bi bi-archive me-2" />
               Repositorio de Proyectos
@@ -174,6 +184,12 @@ function DirectorSidebar() {
             <NavLink className={linkClass} to="/lineas-de-accion" onClick={onNav}>
               <i className="bi bi-diagram-3 me-2" />
               Líneas de acción
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink className={linkClass} to="/ods" onClick={onNav}>
+              <i className="bi bi-globe-americas me-2" />
+              ODS
             </NavLink>
           </li>
           <li className="nav-item mt-2">

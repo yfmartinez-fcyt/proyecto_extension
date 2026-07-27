@@ -15,6 +15,8 @@ import DirectorDashboard from './pages/DirectorDashboard';
 import DirectorRevision from './pages/DirectorRevision';
 import PresentarInforme from './pages/PresentarInforme';
 import './styles/director.css';
+import ODS from './pages/ODS';
+
 
 function BodyClassManager() {
   const location = useLocation();
@@ -48,6 +50,7 @@ export default function App() {
           <Route path="/soporte-tecnico" element={<Soporte />} />
           <Route path="/proyectos/repositorio" element={<Repositorio />} />
           <Route path="/proyectos/detalle/:id" element={<DetalleRepositorio />} />
+          <Route path="/ods" element={<ODS />} />
           <Route
             path="/perfil"
             element={
